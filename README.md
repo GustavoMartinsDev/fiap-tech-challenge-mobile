@@ -47,6 +47,7 @@ Para executar o Expo rode:
 
 - [Expo](https://expo.dev/): Plataforma para desenvolvimento prático de apllicações em React Native.
 - [React Native Paper](https://callstack.github.io/react-native-paper/): Material UI lib para componentes e ícones React Native.
+- [Victory Native](https://commerce.nearform.com/open-source/victory-native/): Material UI lib para gráficos React Native.
 
 ## Conceitos aplicados
 
