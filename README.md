@@ -34,9 +34,9 @@ Para instalar as deps quando já estiver utilizando a versão LTS do Node, rode 
 
 2. Tenha instalado localmente o SDK de Android e o emulador de um dispositivo configurado. 
 
-  a. O [Android Studio](https://developer.android.com/studio) pode ser utilizado para ambas as funções. 
+    a. O [Android Studio](https://developer.android.com/studio) pode ser utilizado para ambas as funções. 
   
-  b. Caso não queira utilizar um emulador, também é possível configurar uma ferramenta como [scrcpy](https://github.com/Genymobile/scrcpy) para utilizar seu próprio dispositivo como emulador.
+    b. Caso não queira utilizar um emulador, também é possível configurar uma ferramenta como [scrcpy](https://github.com/Genymobile/scrcpy) para utilizar seu próprio dispositivo como emulador.
 
 ### Ambiente de desenvolvimento local
 
