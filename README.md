@@ -32,26 +32,26 @@ Video de demonstração do projeto no [Youtube]().
 
 Para instalar as deps quando já estiver utilizando a versão LTS do Node, rode `npm i` ou `npm install`.
 
-2. Tenha instalado localmente o SDK de Android e o emulador de um dispositivo configurado. 
+2. Tenha instalado localmente o SDK de Android e o emulador de um dispositivo configurado.
 
-    a. O [Android Studio](https://developer.android.com/studio) pode ser utilizado para ambas as funções. 
-  
-    b. Caso não queira utilizar um emulador, também é possível configurar uma ferramenta como [scrcpy](https://github.com/Genymobile/scrcpy) para utilizar seu próprio dispositivo como emulador.
+   a. O [Android Studio](https://developer.android.com/studio) pode ser utilizado para ambas as funções.
+
+   b. Caso não queira utilizar um emulador, também é possível configurar uma ferramenta como [scrcpy](https://github.com/Genymobile/scrcpy) para utilizar seu próprio dispositivo como emulador.
 
 ### Ambiente de desenvolvimento local
 
 Para executar o Expo rode:
 `npm start`
 
-
 ## Tecnologias utilizadas
 
 - [Expo](https://expo.dev/): Plataforma para desenvolvimento prático de apllicações em React Native.
+- [React Native Paper](https://callstack.github.io/react-native-paper/): Material UI lib para componentes e ícones React Native.
 
 ## Conceitos aplicados
 
-- 
+-
 
 ## Outras ferramentas úteis
 
-- 
+-
