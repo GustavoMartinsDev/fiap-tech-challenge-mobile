@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { Button } from 'react-native-paper';
 import { MyChart } from '@/components/MyChart';
 import FButton from '@/components/atoms/FButton/FButton';
+import FIconButton from '@/components/atoms/FIconButton/FIconButton';
 
 export default function HomeScreen() {
   return (
@@ -59,6 +60,9 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+        <MyChart />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
         <FButton
           innerText="Teste"
           options={{
@@ -70,9 +74,12 @@ export default function HomeScreen() {
             children: null,
           }}
         />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <MyChart />
+        <FIconButton
+          options={{
+            icon: 'camera',
+            mode: 'contained',
+          }}
+        />
       </ThemedView>
     </ParallaxScrollView>
   );
