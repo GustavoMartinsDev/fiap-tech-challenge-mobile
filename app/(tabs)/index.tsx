@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button } from 'react-native-paper';
 import { MyChart } from '@/components/MyChart';
+import FButton from '@/components/atoms/FButton/FButton';
 
 export default function HomeScreen() {
   return (
@@ -56,6 +57,19 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <FButton
+          innerText="Teste"
+          options={{
+            mode: 'contained',
+            children: null,
+          }}
+          textProps={{
+            style: { fontWeight: '600', color: 'white' },
+            children: null,
+          }}
+        />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <MyChart />
