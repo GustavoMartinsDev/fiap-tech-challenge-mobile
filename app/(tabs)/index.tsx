@@ -8,8 +8,16 @@ import { Button } from 'react-native-paper';
 import { MyChart } from '@/components/MyChart';
 import FButton from '@/components/atoms/FButton/FButton';
 import FIconButton from '@/components/atoms/FIconButton/FIconButton';
+import FInput from '@/components/atoms/FInput/FInput';
+import { useState } from 'react';
 
 export default function HomeScreen() {
+  const [textExample, setTextExample] = useState<string>('');
+
+  const handleInputChange = (input: string) => {
+    setTextExample(input);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -78,6 +86,12 @@ export default function HomeScreen() {
           options={{
             icon: 'camera',
             mode: 'contained',
+          }}
+        />
+        <FInput
+          options={{
+            value: textExample,
+            onChangeText: (input: string) => handleInputChange(input),
           }}
         />
       </ThemedView>
