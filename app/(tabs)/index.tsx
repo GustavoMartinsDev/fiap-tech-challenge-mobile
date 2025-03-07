@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, ToastAndroid } from 'react-native';
+import { Image, StyleSheet, Platform, ToastAndroid, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -14,8 +14,10 @@ import FAlert, {
   AlertMessageColor,
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
+import FInputImage from '@/components/atoms/FInputImage/FInputImage';
 
 export default function HomeScreen() {
+  const [image, setImage] = useState<string>('');
   const [textExample, setTextExample] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
 
@@ -40,6 +42,10 @@ export default function HomeScreen() {
 
   const handleHiddenAlert = () => {
     setAlert(undefined);
+  };
+
+  const onGetImage = (img: string) => {
+    setImage(img);
   };
 
   return (
@@ -119,6 +125,12 @@ export default function HomeScreen() {
             onChangeText: (input: string) => handleInputChange(input),
           }}
         />
+        <FInputImage onGetImage={onGetImage} />
+        {image && (
+          <View>
+            <Image source={{ uri: image }} style={styles.image} />
+          </View>
+        )}
       </ThemedView>
 
       <FAlert
@@ -146,5 +158,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  image: {
+    width: 200,
+    height: 200,
   },
 });
