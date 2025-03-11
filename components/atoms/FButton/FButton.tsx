@@ -8,7 +8,7 @@ interface FButtonProps {
   textProps?: TextProps<TextStyle>;
 }
 
-export default function FButton(props: FButtonProps) {
+export function FButton(props: FButtonProps) {
   return (
     <View>
       <Button {...props.options}>
