@@ -2,23 +2,34 @@ import { View, Text } from 'react-native';
 import { FButton } from '@/components/atoms/FButton/FButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
 import { Link } from 'expo-router';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import Logo from '@/assets/images/logo.svg';
+import { useTheme } from 'react-native-paper';
 
 export default function SignIn() {
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn } = useAuth();
+  const theme = useTheme();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <Text style={{ fontSize: 24, marginBottom: 16 }}>Welcome back!</Text>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        padding: 16,
+        gap: 12,
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <Logo style={{ alignSelf: 'center', marginVertical: 16 }} />
 
       <FInput
         options={{
-          placeholder: 'Email',
+          placeholder: 'E-mail',
           style: { borderWidth: 1, marginBottom: 16, padding: 8 },
           value: email,
           onChangeText: setEmail,
@@ -27,7 +38,7 @@ export default function SignIn() {
 
       <FInput
         options={{
-          placeholder: 'Password',
+          placeholder: 'Senha',
           secureTextEntry: true,
           style: { borderWidth: 1, marginBottom: 16, padding: 8 },
           value: password,
@@ -36,16 +47,24 @@ export default function SignIn() {
       />
 
       <FButton
-        innerText="Sign In"
+        innerText="Entrar"
         options={{
+          loading,
           mode: 'contained',
-          onPress:() => signIn({ email, password }),
+          onPress: async () => { 
+            setLoading(true);
+            await signIn({ email, password }) 
+            setLoading(false);
+          },
           children: null,
         }}
       />
-      <Link href="/signup" style={{ marginTop: 16 }}>
-        Don't have an account? Sign up
-      </Link>
+      <Text style={{ marginTop: 16, fontFamily: 'Inter', alignSelf: 'center' }}>
+        Não possui uma conta? {''}
+        <Link href="/signup" style={{ color: theme.colors.secondary }}>
+          Criar
+        </Link>
+      </Text>
     </View>
   );
 }
