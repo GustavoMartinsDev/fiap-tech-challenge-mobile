@@ -29,7 +29,9 @@ export function FAlert(props: FAlertModel) {
         visible={props.options?.visible!}
         onDismiss={() => props.options?.onDismiss()}
         {...props.options}
-        style={{ backgroundColor: alertMessageColors[props.type] }}
+        style={{
+          backgroundColor: alertMessageColors[props.type],
+        }}
       >
         {props.textAlert}
       </Snackbar>
