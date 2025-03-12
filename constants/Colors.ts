@@ -5,6 +5,10 @@ export const Colors = {
     dark: '#003849',
     contrastText: '#FFFFFF',
   },
+  error: {
+    main: '#FF0033',
+    contrastText: '#FFFFFF',
+  },
   secondary: {
     main: '#FF5031',
     light: '#FEA996',

@@ -26,6 +26,8 @@ const theme: ThemeProp = {
     onSecondary: Colors.secondary.contrastText,
     tertiary: Colors.tertiary.main,
     background: Colors.tertiary.light,
+    error: Colors.error.main,
+    onError: Colors.error.contrastText,
     // surface: Colors.bgCard.main,
     // text: Colors.textLight.main,
   },

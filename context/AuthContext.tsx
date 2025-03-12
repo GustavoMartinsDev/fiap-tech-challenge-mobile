@@ -27,37 +27,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const signIn = async ({ email, password }: AuthCredentials) => {
-    try {
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    const userCredentials = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-      setUser(userCredentials);
-      setIsAuthenticated(true);
+    setUser(userCredentials);
+    setIsAuthenticated(true);
 
-      router.replace('/');
-    } catch (error) {
-      console.error('Failed to log into account ', error);
-    }
+    router.replace('/');
   };
 
   const signUp = async ({ email, password }: AuthCredentials) => {
-    try {
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    const userCredentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
-      setUser(userCredentials);
-      setIsAuthenticated(true);
+    setUser(userCredentials);
+    setIsAuthenticated(true);
 
-      router.replace('/');
-    } catch (error) {
-      console.error('Failed to create new account ', error);
-    }
+    router.replace('/');
   };
 
   const logout = async () => {
