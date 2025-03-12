@@ -1,20 +1,22 @@
-import { Image, StyleSheet, Platform, ToastAndroid, View } from 'react-native';
+import { Image, StyleSheet, Platform, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button, SnackbarProps } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { MyChart } from '@/components/MyChart';
-import FButton from '@/components/atoms/FButton/FButton';
-import FIconButton from '@/components/atoms/FIconButton/FIconButton';
-import FInput from '@/components/atoms/FInput/FInput';
+import { FButton } from '@/components/atoms/FButton/FButton';
+import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
+import { FInput } from '@/components/atoms/FInput/FInput';
 import { useState } from 'react';
-import FAlert, {
+import {
+  FAlert,
   AlertMessageColor,
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
-import FInputImage from '@/components/atoms/FInputImage/FInputImage';
+import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -107,6 +109,18 @@ export default function HomeScreen() {
             mode: 'contained',
             children: null,
             onPress: () => handleShowAlert(),
+          }}
+          textProps={{
+            style: { fontWeight: '600', color: 'white' },
+            children: null,
+          }}
+        />
+        <FButton
+          innerText="Teste 2"
+          options={{
+            mode: 'contained',
+            children: null,
+            onPress: () => router.replace('/explore'),
           }}
           textProps={{
             style: { fontWeight: '600', color: 'white' },
