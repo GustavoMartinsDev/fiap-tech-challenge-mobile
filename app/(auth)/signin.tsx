@@ -2,18 +2,20 @@ import { View, Text } from 'react-native';
 import { FButton } from '@/components/atoms/FButton/FButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
 import { Link } from 'expo-router';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import Logo from '@/assets/images/logo.svg';
 
 export default function SignIn() {
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+    <View style={{ flex: 1, justifyContent: 'center', padding: 16, gap: 12 }}>
+      <Logo style={{ alignSelf: 'center', marginVertical: 16 }} />
+
       <Text style={{ fontSize: 24, marginBottom: 16 }}>Welcome back!</Text>
 
       <FInput
@@ -39,7 +41,7 @@ export default function SignIn() {
         innerText="Sign In"
         options={{
           mode: 'contained',
-          onPress:() => signIn({ email, password }),
+          onPress: () => signIn({ email, password }),
           children: null,
         }}
       />

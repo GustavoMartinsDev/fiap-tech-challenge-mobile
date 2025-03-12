@@ -1,18 +1,20 @@
 import { View, Text } from 'react-native';
 import { FButton } from '@/components/atoms/FButton/FButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import Banner from '@/assets/images/banner-illustration.svg';
 
 export default function Signup() {
-  const { signUp, isAuthenticated } = useAuth();
+  const { signUp } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+    <View style={{ justifyContent: 'center', padding: 16 }}>
+      <Banner width="100%" height="40%" style={{ alignSelf: 'center' }} />
       <Text style={{ fontSize: 24, marginBottom: 16 }}>
         Create your account!
       </Text>
