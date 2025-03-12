@@ -1,4 +1,5 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import { Auth, getAuth, initializeAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA_Xlkg0tEd9IDoFdCFMeSxgk4izHRJucc',
@@ -10,7 +11,16 @@ const firebaseConfig = {
 };
 
 let app: FirebaseApp;
+let auth: Auth;
 
-app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const hasApp = getApps().length;
 
-export { app };
+if (!hasApp) {
+  app = initializeApp(firebaseConfig);
+  auth = initializeAuth(app);
+} else {
+  app = getApp();
+  auth = getAuth(app);
+}
+
+export { app, auth };
