@@ -6,15 +6,15 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-export default function Login() {
-  const { login } = useAuth();
+export default function SignIn() {
+  const { signIn, isAuthenticated } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <Text style={{ fontSize: 24, marginBottom: 16 }}>Login</Text>
+      <Text style={{ fontSize: 24, marginBottom: 16 }}>Welcome back!</Text>
 
       <FInput
         options={{
@@ -36,18 +36,10 @@ export default function Login() {
       />
 
       <FButton
-        innerText="Login"
+        innerText="Sign In"
         options={{
           mode: 'contained',
-          onPress: async () => {
-            const hasLoggedIn = await login(email, password);
-
-            if (!hasLoggedIn) {
-              return;
-            }
-
-            router.replace('/');
-          },
+          onPress:() => signIn({ email, password }),
           children: null,
         }}
       />

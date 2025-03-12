@@ -1,17 +1,22 @@
 import { auth } from '@/firebase/config';
-import { router } from 'expo-router';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   UserCredential,
 } from 'firebase/auth';
 import { createContext, ReactNode, useContext, useState } from 'react';
+import { router } from 'expo-router';
+
+interface AuthCredentials {
+  email: string;
+  password: string;
+}
 
 interface IAuthContext {
   user: UserCredential | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => void;
-  logout: () => void;
+  signIn: (credentials: AuthCredentials) => Promise<void>;
+  signUp: (credentials: AuthCredentials) => Promise<void>;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -21,46 +26,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserCredential | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const login = async (email: string, password: string) => {
+  const signIn = async ({ email, password }: AuthCredentials) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
+      const userCredentials = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      setUser(userCredential);
+
+      setUser(userCredentials);
       setIsAuthenticated(true);
-      console.log('AuthProvider :: login - usuário logado com sucesso');
-      return true;
+
+      router.replace('/');
     } catch (error) {
-      console.log('AuthProvider :: login - falha ao logar usuário', error);
-      return false;
+      console.error('Failed to log into account ', error);
     }
   };
 
-  const signUp = (email: string, password: string) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        router.replace('/login');
-        console.log('AuthProvider :: signUp - usuário cadastrado com sucesso');
-      })
-      .catch((err) => {
-        console.log('AuthProvider :: signUp - falha', err);
-      });
+  const signUp = async ({ email, password }: AuthCredentials) => {
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      setUser(userCredentials);
+      setIsAuthenticated(true);
+
+      router.replace('/');
+    } catch (error) {
+      console.error('Failed to create new account ', error);
+    }
   };
 
-  const logout = () => {
-    console.log('AuthProvider :: logout - usuário deslogado com sucesso');
-    auth.signOut();
-    setUser(null);
-    setIsAuthenticated(false);
+  const logout = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+      setIsAuthenticated(false);
+
+      router.replace('/');
+    } catch (error) {
+      console.error('Failed to logout ', error);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        login,
+        signIn,
         signUp,
         logout,
         isAuthenticated,
@@ -73,10 +89,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error(
-      'contexto não encontado, useAuth deve estar dentro de AuthProvider'
+      'context not found, useAuth must be wrapped by AuthProvider'
     );
   }
+
   return context;
 };

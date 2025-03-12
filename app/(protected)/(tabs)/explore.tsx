@@ -6,9 +6,14 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { FButton } from '@/components/atoms/FButton/FButton';
+import { router } from 'expo-router';
 import { ActivityIndicator, MD2Colors } from 'react-native-paper';
+import { useAuth } from '@/context/AuthContext';
 
 export default function TabTwoScreen() {
+  const { logout } = useAuth();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -80,9 +85,9 @@ export default function TabTwoScreen() {
       </Collapsible>
       <Collapsible title="Light and dark mode components">
         <ThemedText>
-          This template has light and dark mode support. The{' '}
-          lets you inspect what the user's current color scheme is, and so you
-          can adjust UI colors accordingly.
+          This template has light and dark mode support. The lets you inspect
+          what the user's current color scheme is, and so you can adjust UI
+          colors accordingly.
         </ThemedText>
         <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
           <ThemedText type="link">Learn more</ThemedText>
@@ -112,6 +117,18 @@ export default function TabTwoScreen() {
           ),
         })}
       </Collapsible>
+      <FButton
+        innerText="Logout"
+        options={{
+          mode: 'contained',
+          children: null,
+          onPress: () => logout(),
+        }}
+        textProps={{
+          style: { fontWeight: '600', color: 'white' },
+          children: null,
+        }}
+      />
     </ParallaxScrollView>
   );
 }

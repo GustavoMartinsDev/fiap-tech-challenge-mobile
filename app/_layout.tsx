@@ -35,7 +35,7 @@ export default function RootLayout() {
     <AuthProvider>
       <PaperProvider>
         <Stack>
-          <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)/signin" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
           <Stack.Screen name="(protected)/(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
