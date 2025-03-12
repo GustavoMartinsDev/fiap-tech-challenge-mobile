@@ -5,7 +5,7 @@ type FInputProps = {
   options?: TextInputProps;
 };
 
-export default function FInput(props: FInputProps) {
+export function FInput(props: FInputProps) {
   return (
     <View>
       <TextInput

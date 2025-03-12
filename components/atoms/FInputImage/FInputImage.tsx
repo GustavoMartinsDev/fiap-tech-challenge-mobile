@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import FIconButton from '../FIconButton/FIconButton';
+import { FIconButton } from '../FIconButton/FIconButton';
 import * as ImagePicker from 'expo-image-picker';
 
 interface FInputImageProps {
   onGetImage: (image: string) => void;
 }
 
-export default function FInputImage(props: FInputImageProps) {
+export function FInputImage(props: FInputImageProps) {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -14,8 +14,6 @@ export default function FInputImage(props: FInputImageProps) {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       props.onGetImage(result.assets[0].uri);

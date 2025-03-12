@@ -22,7 +22,7 @@ const alertMessageColors = {
   [AlertMessageColor.Info]: 'blue',
 };
 
-export default function FAlert(props: FAlertModel) {
+export function FAlert(props: FAlertModel) {
   return (
     <View>
       <Snackbar
