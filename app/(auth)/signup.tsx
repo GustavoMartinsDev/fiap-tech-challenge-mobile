@@ -5,23 +5,41 @@ import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Banner from '@/assets/images/banner-illustration.svg';
+import { useTheme } from 'react-native-paper';
 
 export default function Signup() {
   const { signUp } = useAuth();
+  const theme = useTheme();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   return (
-    <View style={{ justifyContent: 'center', padding: 16 }}>
-      <Banner width="100%" height="40%" style={{ alignSelf: 'center' }} />
-      <Text style={{ fontSize: 24, marginBottom: 16 }}>
-        Create your account!
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        padding: 16,
+        gap: 12,
+        backgroundColor: theme.colors.background,
+      }}
+    >
+      <Banner width="100%" height="30%" style={{ alignSelf: 'center' }} />
+      <Text
+        style={{
+          fontSize: 24,
+          marginBottom: 16,
+          fontFamily: 'Inter',
+          alignSelf: 'center',
+        }}
+      >
+        Preencha suas credenciais
       </Text>
 
       <FInput
         options={{
-          placeholder: 'Email',
+          placeholder: 'E-mail',
           style: { borderWidth: 1, marginBottom: 16, padding: 8 },
           value: email,
           onChangeText: setEmail,
@@ -30,7 +48,7 @@ export default function Signup() {
 
       <FInput
         options={{
-          placeholder: 'Password',
+          placeholder: 'Senha',
           style: { borderWidth: 1, marginBottom: 16, padding: 8 },
           value: password,
           onChangeText: setPassword,
@@ -38,16 +56,24 @@ export default function Signup() {
       />
 
       <FButton
-        innerText="Sign Up"
+        innerText="Cadastrar"
         options={{
+          loading,
           mode: 'contained',
-          onPress: () => signUp({ email, password }),
+          onPress: async () => {
+            setLoading(true);
+            await signUp({ email, password });
+            setLoading(false);
+          },
           children: null,
         }}
       />
-      <Link href="/signin" style={{ marginTop: 16 }}>
-        Already have an account? Sign in
-      </Link>
+      <Text style={{ marginTop: 16, fontFamily: 'Inter', alignSelf: 'center' }}>
+        Já possui uma conta? {''}
+        <Link href="/signin" style={{ color: theme.colors.secondary }}>
+          Entrar
+        </Link>
+      </Text>
     </View>
   );
 }
