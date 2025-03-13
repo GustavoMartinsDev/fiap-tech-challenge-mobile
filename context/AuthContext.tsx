@@ -2,7 +2,7 @@ import { auth } from '@/firebase/config';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  UserCredential,
+  User,
 } from 'firebase/auth';
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { router } from 'expo-router';
@@ -13,7 +13,7 @@ interface AuthCredentials {
 }
 
 interface IAuthContext {
-  user: UserCredential | null;
+  user: User | null;
   signIn: (credentials: AuthCredentials) => Promise<void>;
   signUp: (credentials: AuthCredentials) => Promise<void>;
   logout: () => Promise<void>;
@@ -23,7 +23,7 @@ interface IAuthContext {
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserCredential | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const signIn = async ({ email, password }: AuthCredentials) => {
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password
     );
 
-    setUser(userCredentials);
+    setUser(userCredentials.user);
     setIsAuthenticated(true);
 
     router.replace('/');
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password
     );
 
-    setUser(userCredentials);
+    setUser(userCredentials.user);
     setIsAuthenticated(true);
 
     router.replace('/');
