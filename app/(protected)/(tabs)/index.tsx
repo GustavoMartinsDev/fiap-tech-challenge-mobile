@@ -17,11 +17,22 @@ import {
 } from '@/components/atoms/FAlert/FAlert';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 import { router } from 'expo-router';
+import {
+  query,
+  collection,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+} from 'firebase/firestore';
+import { db } from '@/firebase/config';
+import { useAuth } from '@/context/AuthContext';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
   const [textExample, setTextExample] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
+  const { user } = useAuth();
 
   const handleInputChange = (input: string) => {
     setTextExample(input);
@@ -49,6 +60,48 @@ export default function HomeScreen() {
   const onGetImage = (img: string) => {
     setImage(img);
   };
+
+  async function getTransactions(userId: string, accountId: string) {
+    const q = query(
+      collection(db, 'transactions'),
+      where('ownerId', '==', userId),
+      where('accountId', '==', accountId)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    console.log('Transactions for the account')
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, '=>', doc.data());
+    });
+  }
+
+  async function getBankingData() {
+    if (!user) {
+      return;
+    }
+
+    const uid = user.uid;
+
+    try {
+      const q = await query(
+        collection(db, 'accounts'),
+        where('ownerId', '==', uid)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      console.log('Account')
+
+      for (const doc of querySnapshot.docs) {
+        console.log(doc.id, '=>', doc.data());
+
+        await getTransactions(uid, doc.id);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <ParallaxScrollView
@@ -121,6 +174,18 @@ export default function HomeScreen() {
             mode: 'contained',
             children: null,
             onPress: () => router.replace('/explore'),
+          }}
+          textProps={{
+            style: { fontWeight: '600', color: 'white' },
+            children: null,
+          }}
+        />
+        <FButton
+          innerText="Get data"
+          options={{
+            mode: 'contained',
+            children: null,
+            onPress: () => getBankingData(),
           }}
           textProps={{
             style: { fontWeight: '600', color: 'white' },
