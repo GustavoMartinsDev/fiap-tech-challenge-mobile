@@ -22,11 +22,12 @@ import {
   collection,
   where,
   getDocs,
-  getDoc,
   doc,
+  updateDoc,
 } from 'firebase/firestore';
-import { db } from '@/firebase/config';
+import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -57,9 +58,51 @@ export default function HomeScreen() {
     setAlert(undefined);
   };
 
-  const onGetImage = (img: string) => {
-    setImage(img);
+  const onGetImage = async (img: string) => {
+    if (!img || !user) {
+      return;
+    }
+
+    const userId = user.uid;
+    const transactionId = 'jEoLQwLVBtzPGnQYS4CB';
+
+    try {
+      const response = await fetch(img);
+      const blob = await response.blob();
+
+      // const mimeType = blob.type;
+      // const extension = mime.getExtension(mimeType) || 'jpg';
+
+      const filename = `receipts/${userId}/${transactionId}.jpg`;
+      const storageRef = ref(storage, filename);
+
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      await updateTransactionReceipt(transactionId, downloadURL);
+
+      console.log('Uploaded image, download URL:', downloadURL);
+      setImage(img);
+    } catch (error) {
+      console.error('Upload error:', error);
+    }
   };
+
+  async function updateTransactionReceipt(
+    transactionId: string,
+    receiptUrl: string
+  ) {
+    try {
+      const transactionRef = doc(db, 'transactions', transactionId);
+      await updateDoc(transactionRef, {
+        receiptUrl,
+      });
+
+      console.log('Transaction updated with receipt URL');
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+    }
+  }
 
   async function getTransactions(userId: string, accountId: string) {
     const q = query(
@@ -70,9 +113,10 @@ export default function HomeScreen() {
 
     const querySnapshot = await getDocs(q);
 
-    console.log('Transactions for the account')
+    console.log('Transactions for the account');
     querySnapshot.forEach((doc) => {
       console.log(doc.id, '=>', doc.data());
+      setImage(doc.data().receiptUrl);
     });
   }
 
@@ -91,7 +135,7 @@ export default function HomeScreen() {
 
       const querySnapshot = await getDocs(q);
 
-      console.log('Account')
+      console.log('Account');
 
       for (const doc of querySnapshot.docs) {
         console.log(doc.id, '=>', doc.data());
