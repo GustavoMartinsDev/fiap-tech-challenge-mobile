@@ -1,5 +1,8 @@
-export interface Transaction {
+export interface TransactionModel extends TransactionInput {
   id: string;
+}
+
+export interface TransactionInput {
   accountId: string;
   amount: number;
   ownerId: string;

@@ -1,5 +1,5 @@
 import { db } from '@/firebase/config';
-import { Transaction } from '@/firebase/types/transaction';
+import { TransactionModel } from '@/firebase/types/transaction';
 import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import {
   query,
@@ -12,7 +12,7 @@ import {
 export const getTransactions = async (
   userId: string,
   accountId: string
-): Promise<Transaction[]> => {
+): Promise<TransactionModel[]> => {
   if (!accountId) {
     return [];
   }
@@ -34,13 +34,13 @@ export const getTransactions = async (
 
       return {
         id: doc.id,
-        accountId: data.accountId ?? '',
-        amount: data.amount ?? 0,
-        ownerId: data.ownerId ?? '',
-        type: data.type ?? '',
+        accountId: data.accountId,
+        amount: data.amount,
+        ownerId: data.ownerId,
+        type: data.type,
         date: formatTimestampToDate(data.date as Timestamp),
-        receiptUrl: data.receiptUrl ?? '',
-      } as Transaction;
+        receiptUrl: data.receiptUrl,
+      } as TransactionModel;
     });
   } catch (error) {
     console.error('Error fetching transactions:', error);

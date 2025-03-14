@@ -18,9 +18,9 @@ export const getAccount = async (
 
   return {
     id: doc.id,
-    balance: data.balance ?? 0,
-    ownerId: data.ownerId ?? '',
-    type: data.type ?? '',
+    balance: data.balance,
+    ownerId: data.ownerId,
+    type: data.type,
   } as AccountModel;
 };
 

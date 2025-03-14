@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Transaction } from '@/firebase/types/transaction';
+import { TransactionModel } from '@/firebase/types/transaction';
 import { useAuth } from './AuthContext';
 import { getTransactions } from '@/firebase/controllers/transaction';
 import { useAccount } from './AccountContext';
 
 interface TransactionContextType {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
   loading: boolean;
   fetchTransactions: () => Promise<void>;
 }
@@ -19,7 +19,7 @@ export const TransactionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TransactionModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
   const { account } = useAccount();
