@@ -41,15 +41,11 @@ export const TransactionProvider = ({
     if (!user || !account) return;
 
     setLoading(true);
-    try {
-      const fetchedTransactions = await getTransactions(user.uid, account.id);
+    const fetchedTransactions = await getTransactions(user.uid, account.id);
 
-      setTransactions(fetchedTransactions);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setLoading(false);
-    }
+    setTransactions(fetchedTransactions);
+    
+    setLoading(false);
   };
 
   const addTransaction = async (
