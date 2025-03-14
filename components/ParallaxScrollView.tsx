@@ -11,11 +11,11 @@ import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-const HEADER_HEIGHT = 250;
+const HEADER_HEIGHT = 30;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
+  headerImage?: ReactElement;
+  headerBackgroundColor?: { dark: string; light: string };
 }>;
 
 export default function ParallaxScrollView({
@@ -56,13 +56,7 @@ export default function ParallaxScrollView({
         scrollIndicatorInsets={{ bottom }}
         contentContainerStyle={{ paddingBottom: bottom }}
       >
-        <Animated.View
-          style={[
-            styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
-            headerAnimatedStyle,
-          ]}
-        >
+        <Animated.View style={[styles.header, headerAnimatedStyle]}>
           {headerImage}
         </Animated.View>
         <ThemedView style={styles.content}>{children}</ThemedView>
