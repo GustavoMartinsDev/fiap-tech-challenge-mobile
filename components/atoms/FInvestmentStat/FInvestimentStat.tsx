@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -24,8 +25,7 @@ export const FInvestmentStat = ({
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: 'gray',
-    color: 'white',
+    color: Colors.primary.contrastText,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -33,10 +33,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: 'white',
+    color: Colors.primary.contrastText,
   },
   value: {
     fontSize: 20,
-    color: 'white',
+    color: Colors.primary.contrastText,
   },
 });
