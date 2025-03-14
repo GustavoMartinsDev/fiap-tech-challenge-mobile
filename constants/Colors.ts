@@ -31,4 +31,11 @@ export const Colors = {
   bgHeader: {
     main: '#004D61',
   },
+  modal: {
+    main: '#FFFFFF',
+    background: '#00000080',
+  },
+  investmentCard: {
+    main: '#3f51b5',
+  },
 };

@@ -28,18 +28,17 @@ import {
 import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import FSelectInput, {
-  OptionItemModel,
-} from '@/components/atoms/FSelect/FSelect';
-import { TRANSACTION_TYPES } from '@/components/atoms/FSelect/FSelectInput.constants';
+import FSelectInput from '@/components/atoms/FSelect/FSelect';
+import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
 import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
+import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
   const [textExample, setTextExample] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
-  const [options, setOptions] = useState<OptionItemModel[]>(TRANSACTION_TYPES);
-  const [optionSelected, setOptionSelected] = useState<OptionItemModel>();
+  const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
+  const [optionSelected, setOptionSelected] = useState<string>('');
   const { user } = useAuth();
 
   const handleInputChange = (input: string) => {
@@ -154,7 +153,7 @@ export default function HomeScreen() {
     }
   }
 
-  const handleTransactionChange = (transactionOption: OptionItemModel) => {
+  const handleTransactionChange = (transactionOption: string) => {
     setOptionSelected(transactionOption);
   };
 
@@ -214,7 +213,7 @@ export default function HomeScreen() {
         <FSelectInput
           data={options}
           onChange={handleTransactionChange}
-          placeholder={optionSelected?.value ?? ''}
+          placeholder={optionSelected}
         />
         <FButton
           innerText="Teste"
@@ -281,7 +280,7 @@ export default function HomeScreen() {
       <FInvestmentStat
         label="Renda Fixa"
         value="R$ 36.000,00"
-        backgroundColor="#3f51b5"
+        backgroundColor={Colors.investmentCard.main}
       />
     </ParallaxScrollView>
   );
