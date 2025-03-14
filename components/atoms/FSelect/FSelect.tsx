@@ -10,15 +10,11 @@ import {
 } from 'react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
-
-export type OptionItemModel = {
-  value: string;
-  label: string;
-};
+import { Colors } from '@/constants/Colors';
 
 interface DropDownProps {
-  data: OptionItemModel[];
-  onChange: (item: OptionItemModel) => void;
+  data: string[];
+  onChange: (item: string) => void;
   placeholder: string;
 }
 
@@ -31,35 +27,21 @@ export default function FSelectInput({
 
   const toggleExpanded = useCallback(() => setExpanded(!expanded), [expanded]);
 
-  const [value, setValue] = useState('');
-
   const buttonRef = useRef<View>(null);
 
-  const [top, setTop] = useState(0);
+  const [value, setValue] = useState('Selecione ...');
 
-  const onSelect = useCallback((item: OptionItemModel) => {
+  const onSelect = useCallback((item: string) => {
     onChange(item);
-    setValue(item.label);
+    setValue(item);
     setExpanded(false);
   }, []);
 
-  const getItem = (data: OptionItemModel[], index: number) => data[index];
-  const getItemCount = (data: OptionItemModel[]) => data.length;
+  const getItem = (data: string[], index: number) => data[index];
+  const getItemCount = (data: string[]) => data.length;
 
   return (
-    <View
-      ref={buttonRef}
-      onLayout={(event) => {
-        const layout = event.nativeEvent.layout;
-        const topOffset = layout.y;
-        const heightOfComponent = layout.height;
-
-        const finalValue =
-          topOffset + heightOfComponent + (Platform.OS === 'android' ? -32 : 3);
-
-        setTop(finalValue);
-      }}
-    >
+    <View ref={buttonRef}>
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
@@ -79,7 +61,7 @@ export default function FSelectInput({
             <View style={styles.backdrop}>
               <View style={[styles.optionsBox]}>
                 <VirtualizedList
-                  keyExtractor={(item) => item.value}
+                  keyExtractor={(item) => item}
                   data={data}
                   initialNumToRender={4}
                   renderItem={({ item }) => (
@@ -88,7 +70,7 @@ export default function FSelectInput({
                       style={styles.optionItem}
                       onPress={() => onSelect(item)}
                     >
-                      <Text>{item.label}</Text>
+                      <Text>{item}</Text>
                     </TouchableOpacity>
                   )}
                   getItem={getItem}
@@ -112,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.modal.background,
   },
   optionItem: {
     height: 40,
@@ -122,7 +104,7 @@ const styles = StyleSheet.create({
     height: 4,
   },
   optionsBox: {
-    backgroundColor: 'white',
+    backgroundColor: Colors.modal.main,
     width: '90%',
     padding: 10,
     borderRadius: 6,
@@ -137,7 +119,7 @@ const styles = StyleSheet.create({
   button: {
     height: 50,
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.modal.main,
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
