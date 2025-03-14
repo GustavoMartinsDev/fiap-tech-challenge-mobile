@@ -28,11 +28,17 @@ import {
 import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import FSelectInput, {
+  OptionItemModel,
+} from '@/components/atoms/FSelect/FSelect';
+import { TRANSACTION_TYPES } from '@/components/atoms/FSelect/FSelectInput.constants';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
   const [textExample, setTextExample] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
+  const [options, setOptions] = useState<OptionItemModel[]>(TRANSACTION_TYPES);
+  const [optionSelected, setOptionSelected] = useState<OptionItemModel>();
   const { user } = useAuth();
 
   const handleInputChange = (input: string) => {
@@ -147,6 +153,10 @@ export default function HomeScreen() {
     }
   }
 
+  const handleTransactionChange = (transactionOption: OptionItemModel) => {
+    setOptionSelected(transactionOption);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -200,6 +210,11 @@ export default function HomeScreen() {
         <MyChart />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+        <FSelectInput
+          data={options}
+          onChange={handleTransactionChange}
+          placeholder={optionSelected?.value ?? ''}
+        />
         <FButton
           innerText="Teste"
           options={{
