@@ -1,12 +1,20 @@
-export interface TransactionModel extends TransactionInput {
+import { Timestamp } from "firebase/firestore";
+
+export interface TransactionModel {
   id: string;
+  accountId: string;
+  ownerId: string;
+  amount: number;
+  type: string;
+  receiptUrl: string;
+  date: string;
 }
 
 export interface TransactionInput {
-  accountId: string;
   amount: number;
-  ownerId: string;
   type: string;
-  date: string;
-  receiptUrl: string;
+  accountId?: string;
+  ownerId?: string;
+  receiptUrl?: string;
+  date?: Timestamp;
 }
