@@ -17,14 +17,7 @@ import {
 } from '@/components/atoms/FAlert/FAlert';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 import { router } from 'expo-router';
-import {
-  query,
-  collection,
-  where,
-  getDocs,
-  doc,
-  updateDoc,
-} from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -32,8 +25,8 @@ import FSelectInput from '@/components/atoms/FSelect/FSelect';
 import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
 import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
 import { Colors } from '@/constants/Colors';
-import { getTransactions } from '@/firebase/controllers/transaction';
 import { useAccount } from '@/context/AccountContext';
+import { useTransactions } from '@/context/TransactionContext';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -43,6 +36,11 @@ export default function HomeScreen() {
   const [optionSelected, setOptionSelected] = useState<string>('');
   const { user } = useAuth();
   const { account } = useAccount();
+  const {
+    transactions,
+    fetchTransactions,
+    loading: loadingTransactions,
+  } = useTransactions();
 
   const handleInputChange = (input: string) => {
     setTextExample(input);
@@ -197,15 +195,13 @@ export default function HomeScreen() {
           }}
         />
         <FButton
-          innerText="Get data"
+          innerText="Get transactions"
           options={{
             mode: 'contained',
             children: null,
+            loading: loadingTransactions,
             onPress: async () => {
-              console.log('Preloaded account ', account)
-              const response = await getTransactions(user!.uid, account!.id);
-
-              console.log(response);
+              await fetchTransactions();
             },
           }}
           textProps={{
@@ -213,12 +209,51 @@ export default function HomeScreen() {
             children: null,
           }}
         />
-        <FIconButton
-          options={{
-            icon: 'camera',
-            mode: 'contained',
-          }}
-        />
+
+        {loadingTransactions ? (
+          <ThemedText>Carregando transações...</ThemedText>
+        ) : (
+          <View>
+            {transactions && transactions.length > 0 ? (
+              <View>
+                <ThemedText type="subtitle">Transações:</ThemedText>
+                {transactions.map((transaction, index) => (
+                  <>
+                    <View
+                      key={index}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <ThemedText>
+                        {transaction.amount} - {transaction.date}
+                      </ThemedText>
+                      <FIconButton
+                        options={{
+                          icon: 'file',
+                          mode: 'contained',
+                          onPress: () => {
+                            setImage(transaction.receiptUrl);
+                          },
+                        }}
+                      />
+                    </View>
+                    {image && (
+                      <View>
+                        <Image source={{ uri: image }} style={styles.image} />
+                      </View>
+                    )}
+                  </>
+                ))}
+              </View>
+            ) : (
+              <ThemedText>Nenhuma transação carregada.</ThemedText>
+            )}
+          </View>
+        )}
         <FInput
           options={{
             value: textExample,
@@ -226,11 +261,6 @@ export default function HomeScreen() {
           }}
         />
         <FInputImage onGetImage={onGetImage} />
-        {image && (
-          <View>
-            <Image source={{ uri: image }} style={styles.image} />
-          </View>
-        )}
       </ThemedView>
 
       <FAlert

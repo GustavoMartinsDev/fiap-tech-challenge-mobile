@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
 import { AccountProvider, useAccount } from '@/context/AccountContext';
 import { router } from 'expo-router';
+import { TransactionProvider } from '@/context/TransactionContext';
 
 const ProtectedTabs = () => {
   const { loading } = useAccount();
@@ -82,7 +83,9 @@ export default function TabLayout() {
 
   return (
     <AccountProvider>
+      <TransactionProvider>
       <ProtectedTabs />
+      </TransactionProvider>
     </AccountProvider>
   );
 }
