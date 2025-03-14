@@ -1,6 +1,9 @@
-export interface Account {
+export interface AccountModel extends AccountInput {
   id: string;
-  balance: number;
+}
+
+export interface AccountInput {
   ownerId: string;
   type: string;
+  balance: number;
 }
