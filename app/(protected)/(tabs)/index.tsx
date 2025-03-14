@@ -214,43 +214,39 @@ export default function HomeScreen() {
           <ThemedText>Carregando transações...</ThemedText>
         ) : (
           <View>
+            <ThemedText type="subtitle">Transações:</ThemedText>
             {transactions && transactions.length > 0 ? (
-              <View>
-                <ThemedText type="subtitle">Transações:</ThemedText>
-                {transactions.map((transaction, index) => (
-                  <>
-                    <View
-                      key={index}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <ThemedText>
-                        {transaction.amount} - {transaction.date}
-                      </ThemedText>
-                      <FIconButton
-                        options={{
-                          icon: 'file',
-                          mode: 'contained',
-                          onPress: () => {
-                            setImage(transaction.receiptUrl);
-                          },
-                        }}
-                      />
-                    </View>
-                    {image && (
-                      <View>
-                        <Image source={{ uri: image }} style={styles.image} />
-                      </View>
-                    )}
-                  </>
-                ))}
-              </View>
+              transactions.map((transaction, index) => (
+                <View
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <ThemedText>
+                    R${transaction.amount} - {transaction.date}
+                  </ThemedText>
+                  <FIconButton
+                    options={{
+                      icon: 'file',
+                      mode: 'contained',
+                      onPress: () => {
+                        setImage(transaction.receiptUrl);
+                      },
+                    }}
+                  />
+                </View>
+              ))
             ) : (
               <ThemedText>Nenhuma transação carregada.</ThemedText>
+            )}
+            {image && (
+              <View>
+                <Image source={{ uri: image }} style={styles.image} />
+              </View>
             )}
           </View>
         )}
