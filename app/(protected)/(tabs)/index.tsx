@@ -1,22 +1,22 @@
-import { Image, StyleSheet, Platform, View } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from 'react-native-paper';
-import { MyChart } from '@/components/MyChart';
+import {
+  AlertMessageColor,
+  FAlert,
+  FAlertModel,
+} from '@/components/atoms/FAlert/FAlert';
 import { FButton } from '@/components/atoms/FButton/FButton';
 import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
-import { useState } from 'react';
-import {
-  FAlert,
-  AlertMessageColor,
-  FAlertModel,
-} from '@/components/atoms/FAlert/FAlert';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
+import FAccountSummary from '@/components/molecules/FAccountSummary';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { Button } from 'react-native-paper';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -100,9 +100,6 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <MyChart />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
         <FButton
           innerText="Teste"
           options={{
@@ -152,6 +149,8 @@ export default function HomeScreen() {
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
       />
+
+      <FAccountSummary balance={1000} />
     </ParallaxScrollView>
   );
 }
