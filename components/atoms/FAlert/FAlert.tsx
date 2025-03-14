@@ -22,14 +22,16 @@ const alertMessageColors = {
   [AlertMessageColor.Info]: 'blue',
 };
 
-export default function FAlert(props: FAlertModel) {
+export function FAlert(props: FAlertModel) {
   return (
     <View>
       <Snackbar
         visible={props.options?.visible!}
         onDismiss={() => props.options?.onDismiss()}
         {...props.options}
-        style={{ backgroundColor: alertMessageColors[props.type] }}
+        style={{
+          backgroundColor: alertMessageColors[props.type],
+        }}
       >
         {props.textAlert}
       </Snackbar>

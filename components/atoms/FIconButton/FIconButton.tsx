@@ -5,7 +5,7 @@ type FIconButtonProps = {
   options?: IconButtonProps;
 };
 
-export default function FIconButton(props: FIconButtonProps) {
+export function FIconButton(props: FIconButtonProps) {
   return (
     <View>
       <IconButton

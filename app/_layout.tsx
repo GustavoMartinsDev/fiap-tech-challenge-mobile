@@ -1,25 +1,42 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import { Inter_400Regular, useFonts } from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { PaperProvider } from 'react-native-paper';
+import {
+  configureFonts,
+  MD3LightTheme as DefaultTheme,
+  Provider as PaperProvider,
+} from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider } from '@/context/AuthContext';
+import { Colors } from '@/constants/Colors';
+import { ThemeProp } from 'react-native-paper/lib/typescript/types';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const theme: ThemeProp = {
+  ...DefaultTheme,
+  colors: {
+    // ...DefaultTheme.colors,
+    primary: Colors.primary.main,
+    onPrimary: Colors.primary.contrastText,
+    secondary: Colors.secondary.main,
+    onSecondary: Colors.secondary.contrastText,
+    tertiary: Colors.tertiary.main,
+    background: Colors.tertiary.light,
+    error: Colors.error.main,
+    onError: Colors.error.contrastText,
+    // surface: Colors.bgCard.main,
+    // text: Colors.textLight.main,
+  },
+  fonts: configureFonts({ config: { fontFamily: 'Inter' } }),
+};
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    Inter: Inter_400Regular,
   });
 
   useEffect(() => {
@@ -33,14 +50,19 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={theme}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)/signin" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(protected)/(tabs)"
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
-        <StatusBar style="auto" />
+        <StatusBar style="auto" backgroundColor={theme.colors!.primary} />
       </PaperProvider>
-    </ThemeProvider>
+    </AuthProvider>
   );
 }
