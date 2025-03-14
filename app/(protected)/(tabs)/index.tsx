@@ -28,11 +28,18 @@ import {
 import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import FSelectInput, {
+  OptionItemModel,
+} from '@/components/atoms/FSelect/FSelect';
+import { TRANSACTION_TYPES } from '@/components/atoms/FSelect/FSelectInput.constants';
+import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
   const [textExample, setTextExample] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
+  const [options, setOptions] = useState<OptionItemModel[]>(TRANSACTION_TYPES);
+  const [optionSelected, setOptionSelected] = useState<OptionItemModel>();
   const { user } = useAuth();
 
   const handleInputChange = (input: string) => {
@@ -147,6 +154,10 @@ export default function HomeScreen() {
     }
   }
 
+  const handleTransactionChange = (transactionOption: OptionItemModel) => {
+    setOptionSelected(transactionOption);
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -200,6 +211,11 @@ export default function HomeScreen() {
         <MyChart />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+        <FSelectInput
+          data={options}
+          onChange={handleTransactionChange}
+          placeholder={optionSelected?.value ?? ''}
+        />
         <FButton
           innerText="Teste"
           options={{
@@ -260,6 +276,12 @@ export default function HomeScreen() {
         textAlert={alert?.textAlert ?? ''}
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
+      />
+
+      <FInvestmentStat
+        label="Renda Fixa"
+        value="R$ 36.000,00"
+        backgroundColor="#3f51b5"
       />
     </ParallaxScrollView>
   );
