@@ -26,7 +26,6 @@ export const getTransactions = async (
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.log('No transactions found for this account.');
       return [];
     }
 

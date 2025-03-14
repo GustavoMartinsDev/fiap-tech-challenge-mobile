@@ -1,34 +1,42 @@
 import { db } from '@/firebase/config';
-import { Account } from '@/firebase/types/account';
-import { query, collection, where, getDocs } from 'firebase/firestore';
+import { AccountInput, AccountModel } from '@/firebase/types/account';
+import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
 
-export const getAccount = async (userId: string): Promise<Account | null> => {
-  if (!userId) {
+export const getAccount = async (
+  userId: string
+): Promise<AccountModel | null> => {
+  const q = query(collection(db, 'accounts'), where('ownerId', '==', userId));
+
+  const querySnapshot = await getDocs(q);
+
+  if (querySnapshot.empty) {
     return null;
   }
 
-  try {
-    const q = query(collection(db, 'accounts'), where('ownerId', '==', userId));
-    const querySnapshot = await getDocs(q);
+  const doc = querySnapshot.docs[0]; // Will only support the initial account for now
+  const data = doc.data();
 
-    if (querySnapshot.empty) {
-      console.error('No account found for this user.');
+  return {
+    id: doc.id,
+    balance: data.balance ?? 0,
+    ownerId: data.ownerId ?? '',
+    type: data.type ?? '',
+  } as AccountModel;
+};
 
-      return null;
-    }
+export const createAccount = async (userId: string): Promise<AccountModel> => {
+  const accountCollectionRef = collection(db, 'accounts');
 
-    const doc = querySnapshot.docs[0]; // Will only support the initial account for now
-    const data = doc.data();
+  const newAccount: AccountInput = {
+    ownerId: userId,
+    type: 'Corrente', // For now only account type supported
+    balance: 0,
+  };
 
-    return {
-      id: doc.id,
-      balance: data.balance ?? 0,
-      ownerId: data.ownerId ?? '',
-      type: data.type ?? '',
-    } as Account;
-  } catch (error) {
-    console.error('Error fetching account:', error);
+  const docRef = await addDoc(accountCollectionRef, newAccount);
 
-    return null;
-  }
+  return {
+    ...newAccount,
+    id: docRef.id,
+  } as AccountModel;
 };

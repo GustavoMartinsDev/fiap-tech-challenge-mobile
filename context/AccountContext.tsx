@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getAccount } from '@/firebase/controllers/account';
-import { Account } from '@/firebase/types/account';
+import { createAccount, getAccount } from '@/firebase/controllers/account';
+import { AccountModel } from '@/firebase/types/account';
 import { useAuth } from './AuthContext';
 
 interface AccountContextType {
-  account: Account | null;
+  account: AccountModel | null;
   loading: boolean;
 }
 
@@ -19,20 +19,30 @@ export const AccountProvider = ({
   children: React.ReactNode;
 }) => {
   const { user } = useAuth();
-  const [account, setAccount] = useState<Account | null>(null);
+  const [account, setAccount] = useState<AccountModel | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAccount = async () => {
       if (!user) return;
 
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const accountData = await getAccount(user.uid);
+        let accountData: AccountModel | null;
 
-      setAccount(accountData);
+        accountData = await getAccount(user.uid);
 
-      setLoading(false);
+        if (!accountData) {
+          accountData = await createAccount(user.uid);
+        }
+
+        setAccount(accountData);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchAccount();
