@@ -1,13 +1,25 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { TransactionModel } from '@/firebase/types/transaction';
 import { useAuth } from './AuthContext';
-import { getTransactions } from '@/firebase/controllers/transaction';
+import {
+  createTransaction,
+  getTransaction,
+  getTransactions,
+  updateTransactionReceiptUrl,
+  uploadTransactionReceipt,
+} from '@/firebase/controllers/transaction';
 import { useAccount } from './AccountContext';
 
 interface TransactionContextType {
   transactions: TransactionModel[];
   loading: boolean;
+  creating: boolean;
   fetchTransactions: () => Promise<void>;
+  addTransaction: (
+    amount: number,
+    type: string,
+    receipt?: string
+  ) => Promise<void>;
 }
 
 const TransactionContext = createContext<TransactionContextType | undefined>(
@@ -21,6 +33,7 @@ export const TransactionProvider = ({
 }) => {
   const [transactions, setTransactions] = useState<TransactionModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [creating, setCreating] = useState<boolean>(false);
   const { user } = useAuth();
   const { account } = useAccount();
 
@@ -39,9 +52,51 @@ export const TransactionProvider = ({
     }
   };
 
+  const addTransaction = async (
+    amount: number,
+    type: string,
+    receipt?: string
+  ) => {
+    if (!user || !account) return;
+
+    setCreating(true);
+
+    const createdTransactionId = await createTransaction(user.uid, account.id, {
+      amount,
+      type,
+    });
+
+    if (!createdTransactionId) return;
+
+    if (receipt) {
+      const receiptUrl = await uploadTransactionReceipt(
+        user.uid,
+        createdTransactionId,
+        receipt
+      );
+
+      if (!receiptUrl) return;
+
+      await updateTransactionReceiptUrl(createdTransactionId, receiptUrl);
+    }
+
+    const transaction = await getTransaction(createdTransactionId);
+
+    if (!transaction) return;
+
+    setTransactions([transaction, ...transactions]);
+    setCreating(false);
+  };
+
   return (
     <TransactionContext.Provider
-      value={{ transactions, loading, fetchTransactions }}
+      value={{
+        transactions,
+        loading,
+        creating,
+        fetchTransactions,
+        addTransaction,
+      }}
     >
       {children}
     </TransactionContext.Provider>
