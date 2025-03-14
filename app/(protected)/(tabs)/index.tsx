@@ -4,7 +4,6 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from 'react-native-paper';
 import { MyChart } from '@/components/MyChart';
 import { FButton } from '@/components/atoms/FButton/FButton';
 import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
@@ -123,43 +122,20 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Olá</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText type="subtitle">E-mail logado</ThemedText>
+        <ThemedText>{user?.email}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
+        <ThemedText type="subtitle">Saldo atual</ThemedText>
+        <ThemedText>R${account?.balance}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <Button icon="camera">Press me</Button>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{' '}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{' '}
-          directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+        <ThemedText type="subtitle">ID da conta</ThemedText>
+        <ThemedText>{account?.id}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <MyChart />
