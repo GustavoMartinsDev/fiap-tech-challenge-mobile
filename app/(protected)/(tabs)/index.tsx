@@ -32,6 +32,8 @@ import FSelectInput from '@/components/atoms/FSelect/FSelect';
 import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
 import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
 import { Colors } from '@/constants/Colors';
+import { getTransactions } from '@/firebase/controllers/transaction';
+import { useAccount } from '@/context/AccountContext';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -40,6 +42,7 @@ export default function HomeScreen() {
   const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
   const [optionSelected, setOptionSelected] = useState<string>('');
   const { user } = useAuth();
+  const { account } = useAccount();
 
   const handleInputChange = (input: string) => {
     setTextExample(input);
@@ -76,9 +79,6 @@ export default function HomeScreen() {
       const response = await fetch(img);
       const blob = await response.blob();
 
-      // const mimeType = blob.type;
-      // const extension = mime.getExtension(mimeType) || 'jpg';
-
       const filename = `receipts/${userId}/${transactionId}.jpg`;
       const storageRef = ref(storage, filename);
 
@@ -107,49 +107,6 @@ export default function HomeScreen() {
       console.log('Transaction updated with receipt URL');
     } catch (error) {
       console.error('Error updating transaction:', error);
-    }
-  }
-
-  async function getTransactions(userId: string, accountId: string) {
-    const q = query(
-      collection(db, 'transactions'),
-      where('ownerId', '==', userId),
-      where('accountId', '==', accountId)
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    console.log('Transactions for the account');
-    querySnapshot.forEach((doc) => {
-      console.log(doc.id, '=>', doc.data());
-      setImage(doc.data().receiptUrl);
-    });
-  }
-
-  async function getBankingData() {
-    if (!user) {
-      return;
-    }
-
-    const uid = user.uid;
-
-    try {
-      const q = await query(
-        collection(db, 'accounts'),
-        where('ownerId', '==', uid)
-      );
-
-      const querySnapshot = await getDocs(q);
-
-      console.log('Account');
-
-      for (const doc of querySnapshot.docs) {
-        console.log(doc.id, '=>', doc.data());
-
-        await getTransactions(uid, doc.id);
-      }
-    } catch (error) {
-      console.error(error);
     }
   }
 
@@ -244,7 +201,12 @@ export default function HomeScreen() {
           options={{
             mode: 'contained',
             children: null,
-            onPress: () => getBankingData(),
+            onPress: async () => {
+              console.log('Preloaded account ', account)
+              const response = await getTransactions(user!.uid, account!.id);
+
+              console.log(response);
+            },
           }}
           textProps={{
             style: { fontWeight: '600', color: 'white' },
