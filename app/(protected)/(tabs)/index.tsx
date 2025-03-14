@@ -15,11 +15,7 @@ import {
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
-import { router } from 'expo-router';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db, storage } from '@/firebase/config';
 import { useAuth } from '@/context/AuthContext';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import FSelectInput from '@/components/atoms/FSelect/FSelect';
 import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
 import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
@@ -29,7 +25,8 @@ import { useTransactions } from '@/context/TransactionContext';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
-  const [textExample, setTextExample] = useState<string>('');
+  const [shownReceipts, setShownReceipts] = useState<string[]>([]);
+  const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
   const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
   const [optionSelected, setOptionSelected] = useState<string>('');
@@ -38,17 +35,27 @@ export default function HomeScreen() {
   const {
     transactions,
     fetchTransactions,
+    addTransaction,
+    creating: creatingTransaction,
     loading: loadingTransactions,
   } = useTransactions();
 
   const handleInputChange = (input: string) => {
-    setTextExample(input);
+    settransactionValue(input);
   };
 
-  const handleShowAlert = () => {
+  const toggleShownReceipts = (receiptUrl: string) => {
+    setShownReceipts((prev) =>
+      prev.includes(receiptUrl)
+        ? prev.filter((url) => url !== receiptUrl)
+        : [...prev, receiptUrl]
+    );
+  };
+
+  const handleShowAlert = (textAlert: string) => {
     const alertPopUp: FAlertModel = {
       type: AlertMessageColor.Success,
-      textAlert: 'Alerta de teste',
+      textAlert,
       options: {
         visible: true,
         onDismiss: () => handleHiddenAlert(),
@@ -64,48 +71,19 @@ export default function HomeScreen() {
     setAlert(undefined);
   };
 
-  const onGetImage = async (img: string) => {
-    if (!img || !user) {
+  const onGetImage = (img: string) => {
+    setImage(img);
+  };
+
+  const handleNewTransaction = async () => {
+    if (!optionSelected || !transactionValue || !user || !account) {
       return;
     }
 
-    const userId = user.uid;
-    const transactionId = 'jEoLQwLVBtzPGnQYS4CB';
+    await addTransaction(Number(transactionValue), optionSelected, image);
 
-    try {
-      const response = await fetch(img);
-      const blob = await response.blob();
-
-      const filename = `receipts/${userId}/${transactionId}.jpg`;
-      const storageRef = ref(storage, filename);
-
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-
-      await updateTransactionReceipt(transactionId, downloadURL);
-
-      console.log('Uploaded image, download URL:', downloadURL);
-      setImage(img);
-    } catch (error) {
-      console.error('Upload error:', error);
-    }
+    handleShowAlert('Transação criada com sucesso');
   };
-
-  async function updateTransactionReceipt(
-    transactionId: string,
-    receiptUrl: string
-  ) {
-    try {
-      const transactionRef = doc(db, 'transactions', transactionId);
-      await updateDoc(transactionRef, {
-        receiptUrl,
-      });
-
-      console.log('Transaction updated with receipt URL');
-    } catch (error) {
-      console.error('Error updating transaction:', error);
-    }
-  }
 
   const handleTransactionChange = (transactionOption: string) => {
     setOptionSelected(transactionOption);
@@ -146,24 +124,32 @@ export default function HomeScreen() {
           onChange={handleTransactionChange}
           placeholder={optionSelected}
         />
-        <FButton
-          innerText="Teste"
+        <FInput
           options={{
-            mode: 'contained',
-            children: null,
-            onPress: () => handleShowAlert(),
-          }}
-          textProps={{
-            style: { fontWeight: '600', color: 'white' },
-            children: null,
+            value: transactionValue,
+            onChangeText: (input: string) => handleInputChange(input),
           }}
         />
+        <FInputImage onGetImage={onGetImage} />
+        {image && (
+          <View>
+            <Image source={{ uri: image }} style={styles.image} />
+          </View>
+        )}
+
+        <FAlert
+          textAlert={alert?.textAlert ?? ''}
+          type={alert?.type ?? AlertMessageColor.Info}
+          options={alert?.options}
+        />
+
         <FButton
-          innerText="Teste 2"
+          innerText="Create transaction"
           options={{
+            loading: creatingTransaction,
             mode: 'contained',
             children: null,
-            onPress: () => router.replace('/explore'),
+            onPress: () => handleNewTransaction(),
           }}
           textProps={{
             style: { fontWeight: '600', color: 'white' },
@@ -196,50 +182,50 @@ export default function HomeScreen() {
                 <View
                   key={index}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    marginBottom: 16,
+                    paddingBottom: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#ccc',
                   }}
                 >
-                  <ThemedText>
-                    R${transaction.amount} - {transaction.date}
-                  </ThemedText>
-                  <FIconButton
-                    options={{
-                      icon: 'file',
-                      mode: 'contained',
-                      onPress: () => {
-                        setImage(transaction.receiptUrl);
-                      },
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                     }}
-                  />
+                  >
+                    <ThemedText>
+                      R${transaction.amount} - {transaction.date}
+                    </ThemedText>
+                    {transaction.receiptUrl && (
+                      <FIconButton
+                        options={{
+                          icon: 'file',
+                          mode: 'contained',
+                          onPress: () => toggleShownReceipts(transaction.id),
+                        }}
+                      />
+                    )}
+                  </View>
+
+                  {shownReceipts.includes(transaction.id) &&
+                    transaction.receiptUrl && (
+                      <View style={{ marginTop: 8, alignItems: 'center' }}>
+                        <Image
+                          source={{ uri: transaction.receiptUrl }}
+                          style={styles.image}
+                        />
+                      </View>
+                    )}
                 </View>
               ))
             ) : (
               <ThemedText>Nenhuma transação carregada.</ThemedText>
             )}
-            {image && (
-              <View>
-                <Image source={{ uri: image }} style={styles.image} />
-              </View>
-            )}
           </View>
         )}
-        <FInput
-          options={{
-            value: textExample,
-            onChangeText: (input: string) => handleInputChange(input),
-          }}
-        />
-        <FInputImage onGetImage={onGetImage} />
       </ThemedView>
-
-      <FAlert
-        textAlert={alert?.textAlert ?? ''}
-        type={alert?.type ?? AlertMessageColor.Info}
-        options={alert?.options}
-      />
 
       <FInvestmentStat
         label="Renda Fixa"
