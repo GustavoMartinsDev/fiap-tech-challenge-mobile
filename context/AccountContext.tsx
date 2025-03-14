@@ -3,17 +3,15 @@ import { getAccount } from '@/firebase/controllers/account';
 import { Account } from '@/firebase/types/account';
 import { useAuth } from './AuthContext';
 
-interface AccountContextProps {
+interface AccountContextType {
   account: Account | null;
   loading: boolean;
 }
 
-const AccountContext = createContext<AccountContextProps>({
+const AccountContext = createContext<AccountContextType>({
   account: null,
   loading: true,
 });
-
-export const useAccount = () => useContext(AccountContext);
 
 export const AccountProvider = ({
   children,
@@ -45,4 +43,14 @@ export const AccountProvider = ({
       {children}
     </AccountContext.Provider>
   );
+};
+
+export const useAccount = (): AccountContextType => {
+  const context = useContext(AccountContext);
+
+  if (!context) {
+    throw new Error('useAccount must be used within an AccountProvider');
+  }
+
+  return context;
 };
