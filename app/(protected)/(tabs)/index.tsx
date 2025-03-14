@@ -32,6 +32,7 @@ import FSelectInput, {
   OptionItemModel,
 } from '@/components/atoms/FSelect/FSelect';
 import { TRANSACTION_TYPES } from '@/components/atoms/FSelect/FSelectInput.constants';
+import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
@@ -275,6 +276,12 @@ export default function HomeScreen() {
         textAlert={alert?.textAlert ?? ''}
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
+      />
+
+      <FInvestmentStat
+        label="Renda Fixa"
+        value="R$ 36.000,00"
+        backgroundColor="#3f51b5"
       />
     </ParallaxScrollView>
   );
