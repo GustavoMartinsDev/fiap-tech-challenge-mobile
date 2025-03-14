@@ -12,7 +12,7 @@ interface AuthCredentials {
   password: string;
 }
 
-interface IAuthContext {
+interface AuthContextType {
   user: User | null;
   signIn: (credentials: AuthCredentials) => Promise<void>;
   signUp: (credentials: AuthCredentials) => Promise<void>;
@@ -20,7 +20,7 @@ interface IAuthContext {
   isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<IAuthContext | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
 
   if (!context) {

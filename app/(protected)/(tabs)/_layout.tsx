@@ -1,28 +1,33 @@
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, ActivityIndicator, Text } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/context/AuthContext';
+import { AccountProvider, useAccount } from '@/context/AccountContext';
 import { router } from 'expo-router';
+import { TransactionProvider } from '@/context/TransactionContext';
 
-export default function TabLayout() {
-  const { isAuthenticated } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
+const ProtectedTabs = () => {
+  const { loading } = useAccount();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && !isAuthenticated) {
-      router.replace('/(auth)/signin');
-    }
-  }, [isMounted, isAuthenticated]);
-
-  if (!isAuthenticated) {
-    return null;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={Colors.primary.main} />
+        <Text
+          style={{
+            marginTop: 16,
+            fontSize: 16,
+            fontFamily: 'InterBold',
+            alignSelf: 'center',
+          }}
+        >
+          Carregando informações da conta...
+        </Text>
+      </View>
+    );
   }
 
   return (
@@ -31,13 +36,9 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: Colors.primary.main,
         tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-          },
+          ios: { position: 'absolute' },
         }),
-        tabBarLabelStyle: {
-          fontFamily: 'InterBold',
-        },
+        tabBarLabelStyle: { fontFamily: 'InterBold' },
       }}
     >
       <Tabs.Screen
@@ -59,5 +60,32 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  );
+};
+
+export default function TabLayout() {
+  const { isAuthenticated } = useAuth();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && !isAuthenticated) {
+      router.replace('/(auth)/signin');
+    }
+  }, [isMounted, isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return (
+    <AccountProvider>
+      <TransactionProvider>
+      <ProtectedTabs />
+      </TransactionProvider>
+    </AccountProvider>
   );
 }
