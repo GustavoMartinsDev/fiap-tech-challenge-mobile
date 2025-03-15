@@ -14,31 +14,45 @@ import {
   doc,
   getDoc,
   orderBy,
+  limit,
+  DocumentSnapshot,
+  startAfter,
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export const getTransactions = async (
   userId: string,
-  accountId: string
-): Promise<TransactionModel[]> => {
+  accountId: string,
+  pageSize: number = 10,
+  lastVisible: DocumentSnapshot | null = null
+): Promise<{
+  transactions: TransactionModel[];
+  lastVisible: DocumentSnapshot | null;
+}> => {
   if (!accountId) {
-    return [];
+    return { transactions: [], lastVisible: null };
   }
 
   try {
-    const q = query(
+    let q = query(
       collection(db, 'transactions'),
       where('ownerId', '==', userId),
       where('accountId', '==', accountId),
-      orderBy('date', 'desc')
+      orderBy('date', 'desc'),
+      limit(pageSize)
     );
+
+    if (lastVisible) {
+      q = query(q, startAfter(lastVisible));
+    }
+
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return [];
+      return { transactions: [], lastVisible: null };
     }
 
-    return querySnapshot.docs.map((doc) => {
+    const transactions = querySnapshot.docs.map((doc) => {
       const data = doc.data();
 
       return {
@@ -51,10 +65,13 @@ export const getTransactions = async (
         receiptUrl: data.receiptUrl,
       } as TransactionModel;
     });
+
+    const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return { transactions, lastVisible: newLastVisible };
   } catch (error) {
     console.error('Error fetching transactions:', error);
-
-    return [];
+    return { transactions: [], lastVisible: null };
   }
 };
 
