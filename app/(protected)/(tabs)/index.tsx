@@ -1,4 +1,4 @@
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -13,24 +13,50 @@ import { FButton } from '@/components/atoms/FButton/FButton';
 import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
+import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
+import FSelectInput from '@/components/atoms/FSelect/FSelect';
 import FAccountSummary from '@/components/molecules/FAccountSummary';
+import { Colors } from '@/constants/Colors';
+import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
+import { useAccount } from '@/context/AccountContext';
+import { useAuth } from '@/context/AuthContext';
+import { useTransactions } from '@/context/TransactionContext';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Button } from 'react-native-paper';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
-  const [textExample, setTextExample] = useState<string>('');
+  const [shownReceipts, setShownReceipts] = useState<string[]>([]);
+  const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
+  const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
+  const [optionSelected, setOptionSelected] = useState<string>('');
+  const { user } = useAuth();
+  const { account } = useAccount();
+  const {
+    transactions,
+    fetchTransactions,
+    addTransaction,
+    creating: creatingTransaction,
+    loading: loadingTransactions,
+  } = useTransactions();
 
   const handleInputChange = (input: string) => {
-    setTextExample(input);
+    settransactionValue(input);
   };
 
-  const handleShowAlert = () => {
+  const toggleShownReceipts = (receiptUrl: string) => {
+    setShownReceipts((prev) =>
+      prev.includes(receiptUrl)
+        ? prev.filter((url) => url !== receiptUrl)
+        : [...prev, receiptUrl]
+    );
+  };
+
+  const handleShowAlert = (textAlert: string) => {
     const alertPopUp: FAlertModel = {
       type: AlertMessageColor.Success,
-      textAlert: 'Alerta de teste',
+      textAlert,
       options: {
         visible: true,
         onDismiss: () => handleHiddenAlert(),
@@ -50,54 +76,37 @@ export default function HomeScreen() {
     setImage(img);
   };
 
+  const handleNewTransaction = async () => {
+    if (!optionSelected || !transactionValue || !user || !account) {
+      return;
+    }
+
+    await addTransaction(Number(transactionValue), optionSelected, image);
+
+    handleShowAlert('Transação criada com sucesso');
+  };
+
+  const handleTransactionChange = (transactionOption: string) => {
+    setOptionSelected(transactionOption);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }
-    >
+    <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Olá</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          to see changes. Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText type="subtitle">E-mail logado</ThemedText>
+        <ThemedText>{user?.email}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
+        <ThemedText type="subtitle">Saldo atual</ThemedText>
+        <ThemedText>R${account?.balance}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <Button icon="camera">Press me</Button>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{' '}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{' '}
-          directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+        <ThemedText type="subtitle">ID da conta</ThemedText>
+        <ThemedText>{account?.id}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <FButton
@@ -105,7 +114,7 @@ export default function HomeScreen() {
           options={{
             mode: 'contained',
             children: null,
-            onPress: () => handleShowAlert(),
+            onPress: () => handleShowAlert('Teste'),
           }}
           textProps={{
             style: { fontWeight: '600', color: 'white' },
@@ -130,9 +139,16 @@ export default function HomeScreen() {
             mode: 'contained',
           }}
         />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <FSelectInput
+          data={options}
+          onChange={handleTransactionChange}
+          placeholder={optionSelected}
+        />
         <FInput
           options={{
-            value: textExample,
+            value: transactionValue,
             onChangeText: (input: string) => handleInputChange(input),
           }}
         />
@@ -142,12 +158,101 @@ export default function HomeScreen() {
             <Image source={{ uri: image }} style={styles.image} />
           </View>
         )}
+
+        <FAlert
+          textAlert={alert?.textAlert ?? ''}
+          type={alert?.type ?? AlertMessageColor.Info}
+          options={alert?.options}
+        />
+
+        <FButton
+          innerText="Create transaction"
+          options={{
+            loading: creatingTransaction,
+            mode: 'contained',
+            children: null,
+            onPress: () => handleNewTransaction(),
+          }}
+          textProps={{
+            style: { fontWeight: '600', color: 'white' },
+            children: null,
+          }}
+        />
+        <FButton
+          innerText="Get transactions"
+          options={{
+            mode: 'contained',
+            children: null,
+            loading: loadingTransactions,
+            onPress: async () => {
+              await fetchTransactions();
+            },
+          }}
+          textProps={{
+            style: { fontWeight: '600', color: 'white' },
+            children: null,
+          }}
+        />
+
+        {loadingTransactions ? (
+          <ThemedText>Carregando transações...</ThemedText>
+        ) : (
+          <View>
+            <ThemedText type="subtitle">Transações:</ThemedText>
+            {transactions && transactions.length > 0 ? (
+              transactions.map((transaction, index) => (
+                <View
+                  key={index}
+                  style={{
+                    marginBottom: 16,
+                    paddingBottom: 8,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#ccc',
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <ThemedText>
+                      R${transaction.amount} - {transaction.date}
+                    </ThemedText>
+                    {transaction.receiptUrl && (
+                      <FIconButton
+                        options={{
+                          icon: 'file',
+                          mode: 'contained',
+                          onPress: () => toggleShownReceipts(transaction.id),
+                        }}
+                      />
+                    )}
+                  </View>
+
+                  {shownReceipts.includes(transaction.id) &&
+                    transaction.receiptUrl && (
+                      <View style={{ marginTop: 8, alignItems: 'center' }}>
+                        <Image
+                          source={{ uri: transaction.receiptUrl }}
+                          style={styles.image}
+                        />
+                      </View>
+                    )}
+                </View>
+              ))
+            ) : (
+              <ThemedText>Nenhuma transação carregada.</ThemedText>
+            )}
+          </View>
+        )}
       </ThemedView>
 
-      <FAlert
-        textAlert={alert?.textAlert ?? ''}
-        type={alert?.type ?? AlertMessageColor.Info}
-        options={alert?.options}
+      <FInvestmentStat
+        label="Renda Fixa"
+        value="R$ 36.000,00"
+        backgroundColor={Colors.investmentCard.main}
       />
 
       <FAccountSummary balance={1000} />

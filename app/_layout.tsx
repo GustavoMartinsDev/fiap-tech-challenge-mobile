@@ -1,4 +1,8 @@
-import { Inter_400Regular, useFonts } from '@expo-google-fonts/inter';
+import {
+  Inter_400Regular,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {
@@ -37,6 +41,7 @@ const theme: ThemeProp = {
 export default function RootLayout() {
   const [loaded] = useFonts({
     Inter: Inter_400Regular,
+    InterBold: Inter_700Bold,
   });
 
   useEffect(() => {
