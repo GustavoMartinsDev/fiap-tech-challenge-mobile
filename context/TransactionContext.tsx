@@ -3,6 +3,7 @@ import { TransactionModel } from '@/firebase/types/transaction';
 import { useAuth } from './AuthContext';
 import {
   createTransaction,
+  editTransactionData,
   getTransaction,
   getTransactions,
   updateTransactionReceiptUrl,
@@ -14,7 +15,9 @@ interface TransactionContextType {
   transactions: TransactionModel[];
   loading: boolean;
   creating: boolean;
+  editing: boolean;
   fetchTransactions: () => Promise<void>;
+  editTransaction: (transaction: TransactionModel) => Promise<void>;
   addTransaction: (
     amount: number,
     type: string,
@@ -34,6 +37,7 @@ export const TransactionProvider = ({
   const [transactions, setTransactions] = useState<TransactionModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [creating, setCreating] = useState<boolean>(false);
+  const [editing, setEditing] = useState<boolean>(false);
   const { user } = useAuth();
   const { account, updateBalance } = useAccount();
 
@@ -85,12 +89,62 @@ export const TransactionProvider = ({
     setCreating(false);
   };
 
+  const editTransaction = async (editedTransaction: TransactionModel) => {
+    if (!user || !account) return;
+
+    setEditing(true);
+
+    const oldTransaction = transactions.find(
+      (transaction) => transaction.id === editedTransaction.id
+    );
+
+    if (!oldTransaction) return;
+
+    const isNewReceipt =
+      editedTransaction.receiptUrl !== oldTransaction.receiptUrl;
+
+    if (isNewReceipt) {
+      const newReceiptUrl = await uploadTransactionReceipt(
+        user.uid,
+        editedTransaction.id,
+        editedTransaction.receiptUrl
+      );
+
+      if (!newReceiptUrl) return;
+
+      await updateTransactionReceiptUrl(editedTransaction.id, newReceiptUrl);
+    }
+
+    await editTransactionData(editedTransaction);
+
+    const updatedTransaction = await getTransaction(editedTransaction.id);
+
+    if (!updatedTransaction) return;
+
+    const newTransactions = transactions.map((transaction) =>
+      transaction.id === updatedTransaction.id
+        ? updatedTransaction
+        : transaction
+    );
+
+    setTransactions([...newTransactions]);
+
+    await updateBalance(updatedTransaction.amount, updatedTransaction.type, {
+      oldAmount: oldTransaction.amount,
+      oldType: oldTransaction.type,
+    });
+
+    setEditing(false);
+  };
+
   return (
     <TransactionContext.Provider
       value={{
         transactions,
         loading,
         creating,
+        editing,
+        editTransaction,
         fetchTransactions,
         addTransaction,
       }}

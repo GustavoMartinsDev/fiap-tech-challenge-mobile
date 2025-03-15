@@ -148,3 +148,18 @@ export const updateTransactionReceiptUrl = async (
     console.error('Error setting transaction receipt url: ', error);
   }
 };
+
+export const editTransactionData = async (
+  transaction: TransactionModel
+): Promise<void> => {
+  try {
+    const transactionRef = doc(db, 'transactions', transaction.id);
+
+    updateDoc(transactionRef, {
+      amount: transaction.amount,
+      type: transaction.type,
+    });
+  } catch (error) {
+    console.error('Error setting transaction receipt url: ', error);
+  }
+};
