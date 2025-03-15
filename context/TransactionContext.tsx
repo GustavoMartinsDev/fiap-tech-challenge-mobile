@@ -35,7 +35,7 @@ export const TransactionProvider = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [creating, setCreating] = useState<boolean>(false);
   const { user } = useAuth();
-  const { account } = useAccount();
+  const { account, updateBalance } = useAccount();
 
   const fetchTransactions = async () => {
     if (!user || !account) return;
@@ -44,7 +44,7 @@ export const TransactionProvider = ({
     const fetchedTransactions = await getTransactions(user.uid, account.id);
 
     setTransactions(fetchedTransactions);
-    
+
     setLoading(false);
   };
 
@@ -81,6 +81,7 @@ export const TransactionProvider = ({
     if (!transaction) return;
 
     setTransactions([transaction, ...transactions]);
+    await updateBalance(amount, type);
     setCreating(false);
   };
 

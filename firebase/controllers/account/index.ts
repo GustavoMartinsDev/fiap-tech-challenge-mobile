@@ -1,6 +1,14 @@
 import { db } from '@/firebase/config';
 import { AccountInput, AccountModel } from '@/firebase/types/account';
-import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
+import {
+  query,
+  collection,
+  where,
+  getDocs,
+  addDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore';
 
 export const getAccount = async (
   userId: string
@@ -39,4 +47,19 @@ export const createAccount = async (userId: string): Promise<AccountModel> => {
     ...newAccount,
     id: docRef.id,
   } as AccountModel;
+};
+
+export const updateAccountBalance = async (
+  accountId: string,
+  newBalance: number
+): Promise<void> => {
+  try {
+    const accountRef = doc(db, 'accounts', accountId);
+
+    updateDoc(accountRef, {
+      balance: newBalance,
+    });
+  } catch (error) {
+    console.error('Error updating account balance: ', error);
+  }
 };

@@ -17,18 +17,22 @@ import {
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 import { useAuth } from '@/context/AuthContext';
 import FSelectInput from '@/components/atoms/FSelect/FSelect';
-import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
 import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestimentStat';
 import { Colors } from '@/constants/Colors';
 import { useAccount } from '@/context/AccountContext';
 import { useTransactions } from '@/context/TransactionContext';
+import { TransactionType } from '@/constants/TransactionType.enum';
+import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
+import { formatBalanceToCurrency } from '@/firebase/utils/formatBalanceToCurrency';
 
 export default function HomeScreen() {
   const [image, setImage] = useState<string>('');
   const [shownReceipts, setShownReceipts] = useState<string[]>([]);
   const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
-  const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
+  const [options, setOptions] = useState<string[]>(
+    Object.values(TransactionType)
+  );
   const [optionSelected, setOptionSelected] = useState<string>('');
   const { user } = useAuth();
   const { account } = useAccount();
@@ -101,7 +105,7 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Saldo atual</ThemedText>
-        <ThemedText>R${account?.balance}</ThemedText>
+        <ThemedText>{formatBalanceToCurrency(account!.balance)}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">ID da conta</ThemedText>
@@ -188,7 +192,13 @@ export default function HomeScreen() {
                     }}
                   >
                     <ThemedText>
-                      R${transaction.amount} - {transaction.date}
+                      {transaction.type !== TransactionType.Deposit &&
+                      transaction.type !== TransactionType.Loan
+                        ? '-'
+                        : ''}
+                      {formatBalanceToCurrency(transaction.amount)} -{' '}
+                      {formatTimestampToDate(transaction.date)} - { ' '}
+                      {transaction.type}
                     </ThemedText>
                     {transaction.receiptUrl && (
                       <FIconButton

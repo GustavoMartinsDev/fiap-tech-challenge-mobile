@@ -3,7 +3,6 @@ import {
   TransactionInput,
   TransactionModel,
 } from '@/firebase/types/transaction';
-import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import {
   query,
   collection,
@@ -48,7 +47,7 @@ export const getTransactions = async (
         amount: data.amount,
         ownerId: data.ownerId,
         type: data.type,
-        date: formatTimestampToDate(data.date as Timestamp),
+        date: data.date,
         receiptUrl: data.receiptUrl,
       } as TransactionModel;
     });
@@ -75,7 +74,6 @@ export const getTransaction = async (
     return {
       id: transactionSnap.id,
       ...transactionData,
-      date: formatTimestampToDate(transactionData.date as Timestamp),
     } as TransactionModel;
   } catch (error) {
     console.error('Error getting transaction: ', error);
