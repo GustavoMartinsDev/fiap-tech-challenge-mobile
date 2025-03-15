@@ -96,7 +96,7 @@ export default function HomeScreen() {
   return (
     <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Olá</ThemedText>
+        <ThemedText type="title">Olá {user?.displayName}</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
@@ -197,7 +197,7 @@ export default function HomeScreen() {
                         ? '-'
                         : ''}
                       {formatBalanceToCurrency(transaction.amount)} -{' '}
-                      {formatTimestampToDate(transaction.date)} - { ' '}
+                      {formatTimestampToDate(transaction.date)} -{' '}
                       {transaction.type}
                     </ThemedText>
                     {transaction.receiptUrl && (
