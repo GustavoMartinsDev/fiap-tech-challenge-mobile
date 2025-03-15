@@ -48,7 +48,10 @@ export default function HomeScreen() {
     creating: creatingTransaction,
     loading: loadingTransactions,
     editing: editingTransaction,
+    loadingMore: loadingMoreTransactions,
     editTransaction,
+    hasMoreTransactions,
+    loadMoreTransactions,
   } = useTransactions();
 
   const handleInputChange = (input: string) => {
@@ -222,7 +225,9 @@ export default function HomeScreen() {
           <ThemedText>Carregando transações...</ThemedText>
         ) : (
           <View>
-            <ThemedText type="subtitle">Transações:</ThemedText>
+            <ThemedText type="subtitle">
+              Transações - Total: {transactions.length}
+            </ThemedText>
             {transactions && transactions.length > 0 ? (
               transactions.map((transaction, index) => (
                 <View
@@ -279,6 +284,24 @@ export default function HomeScreen() {
               <ThemedText>Nenhuma transação carregada.</ThemedText>
             )}
           </View>
+        )}
+
+        {hasMoreTransactions && (
+          <FButton
+            innerText="Load more transactions"
+            options={{
+              mode: 'contained',
+              children: null,
+              loading: loadingMoreTransactions,
+              onPress: async () => {
+                await loadMoreTransactions();
+              },
+            }}
+            textProps={{
+              style: { fontWeight: '600', color: 'white' },
+              children: null,
+            }}
+          />
         )}
       </ThemedView>
 

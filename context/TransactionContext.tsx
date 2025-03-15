@@ -10,13 +10,17 @@ import {
   uploadTransactionReceipt,
 } from '@/firebase/controllers/transaction';
 import { useAccount } from './AccountContext';
+import { DocumentSnapshot } from 'firebase/firestore';
 
 interface TransactionContextType {
   transactions: TransactionModel[];
   loading: boolean;
   creating: boolean;
   editing: boolean;
+  loadingMore: boolean;
+  hasMoreTransactions: boolean;
   fetchTransactions: () => Promise<void>;
+  loadMoreTransactions: () => Promise<void>;
   editTransaction: (transaction: TransactionModel) => Promise<void>;
   addTransaction: (
     amount: number,
@@ -38,18 +42,44 @@ export const TransactionProvider = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [creating, setCreating] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
+  const [lastVisible, setLastVisible] = useState<DocumentSnapshot | null>(null);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [hasMoreTransactions, setHasMoreTransactions] =
+    useState<boolean>(false);
   const { user } = useAuth();
   const { account, updateBalance } = useAccount();
+  const pageLimit = 10;
 
   const fetchTransactions = async () => {
     if (!user || !account) return;
 
     setLoading(true);
-    const fetchedTransactions = await getTransactions(user.uid, account.id);
+    const { transactions: fetchedTransactions, lastVisible: newLastVisible } =
+      await getTransactions(user.uid, account.id, pageLimit);
 
     setTransactions(fetchedTransactions);
+    setLastVisible(newLastVisible);
+    setHasMoreTransactions(fetchedTransactions.length === pageLimit);
 
     setLoading(false);
+  };
+
+  const loadMoreTransactions = async () => {
+    if (!user || !account || !lastVisible || !hasMoreTransactions) return;
+
+    setLoadingMore(true);
+    const { transactions: fetchedTransactions, lastVisible: newLastVisible } =
+      await getTransactions(user.uid, account.id, pageLimit, lastVisible);
+
+    setHasMoreTransactions(fetchedTransactions.length === pageLimit);
+
+    setTransactions((prevTransactions) => [
+      ...prevTransactions,
+      ...fetchedTransactions,
+    ]);
+    setLastVisible(newLastVisible);
+
+    setLoadingMore(false);
   };
 
   const addTransaction = async (
@@ -144,9 +174,12 @@ export const TransactionProvider = ({
         loading,
         creating,
         editing,
+        hasMoreTransactions,
         editTransaction,
         fetchTransactions,
+        loadMoreTransactions,
         addTransaction,
+        loadingMore,
       }}
     >
       {children}
