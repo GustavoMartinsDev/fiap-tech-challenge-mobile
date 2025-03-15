@@ -18,6 +18,8 @@ export default function Signup() {
 
   const [alert, setAlert] = useState<FAlertModel>();
 
+  const [displayName, sestDisplayName] = useState('');
+
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(false);
 
@@ -45,7 +47,7 @@ export default function Signup() {
   const handleSignUp = async () => {
     try {
       setLoading(true);
-      await signUp({ email, password });
+      await signUp({ email, password }, displayName);
     } catch (error: any) {
       console.log(error);
 
@@ -93,6 +95,15 @@ export default function Signup() {
         textAlert={alert?.textAlert ?? ''}
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
+      />
+
+      <FInput
+        options={{
+          placeholder: 'Como devemos te chamar?',
+          style: { borderWidth: 1, marginBottom: 16, padding: 8 },
+          value: displayName,
+          onChangeText: sestDisplayName,
+        }}
       />
 
       <FInput

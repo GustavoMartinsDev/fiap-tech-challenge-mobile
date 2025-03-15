@@ -2,6 +2,7 @@ import { auth } from '@/firebase/config';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
   User,
 } from 'firebase/auth';
 import { createContext, ReactNode, useContext, useState } from 'react';
@@ -15,7 +16,7 @@ interface AuthCredentials {
 interface AuthContextType {
   user: User | null;
   signIn: (credentials: AuthCredentials) => Promise<void>;
-  signUp: (credentials: AuthCredentials) => Promise<void>;
+  signUp: (credentials: AuthCredentials, displayName?: string) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -39,12 +40,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     router.replace('/');
   };
 
-  const signUp = async ({ email, password }: AuthCredentials) => {
+  const signUp = async (
+    { email, password }: AuthCredentials,
+    displayName?: string
+  ) => {
     const userCredentials = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
+
+    await updateProfile(userCredentials.user, {
+      displayName,
+    });
 
     setUser(userCredentials.user);
     setIsAuthenticated(true);
