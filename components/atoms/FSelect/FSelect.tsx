@@ -8,7 +8,7 @@ import {
   Platform,
   VirtualizedList,
 } from 'react-native';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
@@ -29,7 +29,11 @@ export default function FSelectInput({
 
   const buttonRef = useRef<View>(null);
 
-  const [value, setValue] = useState('Selecione ...');
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    setValue(placeholder || 'Selecione...');
+  }, [placeholder]);
 
   const onSelect = useCallback((item: string) => {
     onChange(item);
