@@ -10,7 +10,14 @@ import { TransactionType } from '@/constants/TransactionType.enum';
 
 interface AccountContextType {
   account: AccountModel | null;
-  updateBalance: (amount: number, type: string) => Promise<void>;
+  updateBalance: (
+    amount: number,
+    type: string,
+    reverted?: {
+      oldAmount: number;
+      oldType: string;
+    }
+  ) => Promise<void>;
   loading: boolean;
 }
 
@@ -25,13 +32,30 @@ export const AccountProvider = ({
   const [account, setAccount] = useState<AccountModel | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const updateBalance = async (amount: number, type: string) => {
+  const updateBalance = async (
+    amount: number,
+    type: string,
+    reverted?: {
+      oldAmount: number;
+      oldType: string;
+    }
+  ) => {
     if (!user || !account) return;
 
-    const newBalance =
+    let newBalance: number = account.balance;
+
+    if (reverted?.oldAmount && reverted?.oldType) {
+      newBalance =
+        reverted.oldType === TransactionType.Deposit ||
+        reverted.oldType === TransactionType.Loan
+          ? account.balance - reverted.oldAmount
+          : account.balance + reverted.oldAmount;
+    }
+
+    newBalance =
       type === TransactionType.Deposit || type === TransactionType.Loan
-        ? account.balance + amount
-        : account.balance - amount;
+        ? newBalance + amount
+        : newBalance - amount;
 
     await updateAccountBalance(account.id, newBalance);
 
