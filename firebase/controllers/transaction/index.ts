@@ -3,7 +3,6 @@ import {
   TransactionInput,
   TransactionModel,
 } from '@/firebase/types/transaction';
-import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import {
   query,
   collection,
@@ -15,31 +14,45 @@ import {
   doc,
   getDoc,
   orderBy,
+  limit,
+  DocumentSnapshot,
+  startAfter,
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export const getTransactions = async (
   userId: string,
-  accountId: string
-): Promise<TransactionModel[]> => {
+  accountId: string,
+  pageSize: number = 10,
+  lastVisible: DocumentSnapshot | null = null
+): Promise<{
+  transactions: TransactionModel[];
+  lastVisible: DocumentSnapshot | null;
+}> => {
   if (!accountId) {
-    return [];
+    return { transactions: [], lastVisible: null };
   }
 
   try {
-    const q = query(
+    let q = query(
       collection(db, 'transactions'),
       where('ownerId', '==', userId),
       where('accountId', '==', accountId),
-      orderBy('date', 'desc')
+      orderBy('date', 'desc'),
+      limit(pageSize)
     );
+
+    if (lastVisible) {
+      q = query(q, startAfter(lastVisible));
+    }
+
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return [];
+      return { transactions: [], lastVisible: null };
     }
 
-    return querySnapshot.docs.map((doc) => {
+    const transactions = querySnapshot.docs.map((doc) => {
       const data = doc.data();
 
       return {
@@ -48,14 +61,17 @@ export const getTransactions = async (
         amount: data.amount,
         ownerId: data.ownerId,
         type: data.type,
-        date: formatTimestampToDate(data.date as Timestamp),
+        date: data.date,
         receiptUrl: data.receiptUrl,
       } as TransactionModel;
     });
+
+    const newLastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+    return { transactions, lastVisible: newLastVisible };
   } catch (error) {
     console.error('Error fetching transactions:', error);
-
-    return [];
+    return { transactions: [], lastVisible: null };
   }
 };
 
@@ -75,7 +91,6 @@ export const getTransaction = async (
     return {
       id: transactionSnap.id,
       ...transactionData,
-      date: formatTimestampToDate(transactionData.date as Timestamp),
     } as TransactionModel;
   } catch (error) {
     console.error('Error getting transaction: ', error);
@@ -145,6 +160,21 @@ export const updateTransactionReceiptUrl = async (
 
     updateDoc(transactionRef, {
       receiptUrl,
+    });
+  } catch (error) {
+    console.error('Error setting transaction receipt url: ', error);
+  }
+};
+
+export const editTransactionData = async (
+  transaction: TransactionModel
+): Promise<void> => {
+  try {
+    const transactionRef = doc(db, 'transactions', transaction.id);
+
+    updateDoc(transactionRef, {
+      amount: transaction.amount,
+      type: transaction.type,
     });
   } catch (error) {
     console.error('Error setting transaction receipt url: ', error);

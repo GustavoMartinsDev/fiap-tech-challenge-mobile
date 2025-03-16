@@ -17,10 +17,13 @@ import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestiment
 import FSelectInput from '@/components/atoms/FSelect/FSelect';
 import FAccountSummary from '@/components/molecules/FAccountSummary';
 import { Colors } from '@/constants/Colors';
-import { TRANSACTION_TYPES } from '@/constants/FSelectInput.constants';
+import { TransactionType } from '@/constants/TransactionType.enum';
 import { useAccount } from '@/context/AccountContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTransactions } from '@/context/TransactionContext';
+import { TransactionModel } from '@/firebase/types/transaction';
+import { formatBalanceToCurrency } from '@/firebase/utils/formatBalanceToCurrency';
+import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import { router } from 'expo-router';
 import { useState } from 'react';
 
@@ -29,8 +32,14 @@ export default function HomeScreen() {
   const [shownReceipts, setShownReceipts] = useState<string[]>([]);
   const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
-  const [options, setOptions] = useState<string[]>(TRANSACTION_TYPES);
+  const [options, setOptions] = useState<string[]>(
+    Object.values(TransactionType)
+  );
   const [optionSelected, setOptionSelected] = useState<string>('');
+
+  const [transactionSelected, setTransactionSelected] =
+    useState<TransactionModel | null>(null);
+
   const { user } = useAuth();
   const { account } = useAccount();
   const {
@@ -39,6 +48,11 @@ export default function HomeScreen() {
     addTransaction,
     creating: creatingTransaction,
     loading: loadingTransactions,
+    editing: editingTransaction,
+    loadingMore: loadingMoreTransactions,
+    editTransaction,
+    hasMoreTransactions,
+    loadMoreTransactions,
   } = useTransactions();
 
   const handleInputChange = (input: string) => {
@@ -90,10 +104,53 @@ export default function HomeScreen() {
     setOptionSelected(transactionOption);
   };
 
+  const handleTransactionSelectedInput = (input: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        amount: Number(input),
+      };
+    });
+  };
+
+  const changeTransactionSelectedType = (transactionOption: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        type: transactionOption,
+      };
+    });
+  };
+
+  const onChangeTransactionImage = (img: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        receiptUrl: img,
+      };
+    });
+  };
+
+  const handleEditTransaction = async () => {
+    if (!transactionSelected) {
+      return;
+    }
+
+    await editTransaction(transactionSelected);
+
+    await handleShowAlert('Transação editada com sucesso');
+  };
+
   return (
     <ParallaxScrollView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Olá</ThemedText>
+        <ThemedText type="title">Olá {user?.displayName}</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
@@ -102,12 +159,17 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Saldo atual</ThemedText>
-        <ThemedText>R${account?.balance}</ThemedText>
+        <ThemedText>{formatBalanceToCurrency(account!.balance)}</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">ID da conta</ThemedText>
         <ThemedText>{account?.id}</ThemedText>
       </ThemedView>
+      <FAlert
+        textAlert={alert?.textAlert ?? ''}
+        type={alert?.type ?? AlertMessageColor.Info}
+        options={alert?.options}
+      />
       <ThemedView style={styles.stepContainer}>
         <FButton
           innerText="Teste"
@@ -159,12 +221,6 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <FAlert
-          textAlert={alert?.textAlert ?? ''}
-          type={alert?.type ?? AlertMessageColor.Info}
-          options={alert?.options}
-        />
-
         <FButton
           innerText="Create transaction"
           options={{
@@ -178,6 +234,7 @@ export default function HomeScreen() {
             children: null,
           }}
         />
+
         <FButton
           innerText="Get transactions"
           options={{
@@ -198,7 +255,9 @@ export default function HomeScreen() {
           <ThemedText>Carregando transações...</ThemedText>
         ) : (
           <View>
-            <ThemedText type="subtitle">Transações:</ThemedText>
+            <ThemedText type="subtitle">
+              Transações - Total: {transactions.length}
+            </ThemedText>
             {transactions && transactions.length > 0 ? (
               transactions.map((transaction, index) => (
                 <View
@@ -208,18 +267,27 @@ export default function HomeScreen() {
                     paddingBottom: 8,
                     borderBottomWidth: 1,
                     borderBottomColor: '#ccc',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <ThemedText>
-                      R${transaction.amount} - {transaction.date}
-                    </ThemedText>
+                  <ThemedText>
+                    {transaction.type !== TransactionType.Deposit &&
+                    transaction.type !== TransactionType.Loan
+                      ? '-'
+                      : ''}
+                    {formatBalanceToCurrency(transaction.amount)} -{' '}
+                    {formatTimestampToDate(transaction.date)} -{' '}
+                    {transaction.type}
+                  </ThemedText>
+                  <View>
+                    <FIconButton
+                      options={{
+                        icon: 'pencil',
+                        mode: 'contained',
+                        onPress: () => setTransactionSelected(transaction),
+                      }}
+                    />
                     {transaction.receiptUrl && (
                       <FIconButton
                         options={{
@@ -247,7 +315,66 @@ export default function HomeScreen() {
             )}
           </View>
         )}
+
+        {hasMoreTransactions && (
+          <FButton
+            innerText="Load more transactions"
+            options={{
+              mode: 'contained',
+              children: null,
+              loading: loadingMoreTransactions,
+              onPress: async () => {
+                await loadMoreTransactions();
+              },
+            }}
+            textProps={{
+              style: { fontWeight: '600', color: 'white' },
+              children: null,
+            }}
+          />
+        )}
       </ThemedView>
+
+      {transactionSelected && (
+        <ThemedView style={styles.stepContainer}>
+          <ThemedText type="subtitle">Editar transação:</ThemedText>
+          <FSelectInput
+            data={options}
+            placeholder={transactionSelected.type}
+            onChange={changeTransactionSelectedType}
+          />
+          <FInput
+            options={{
+              value: transactionSelected.amount.toString(),
+              onChangeText: (input: string) =>
+                handleTransactionSelectedInput(input),
+            }}
+          />
+          <FInputImage onGetImage={onChangeTransactionImage} />
+          {transactionSelected.receiptUrl && (
+            <View>
+              <Image
+                source={{ uri: transactionSelected.receiptUrl }}
+                style={styles.image}
+              />
+            </View>
+          )}
+
+          <FButton
+            innerText="Edit transaction"
+            options={{
+              loading: editingTransaction,
+              mode: 'contained',
+              children: null,
+              onPress: () => handleEditTransaction(),
+            }}
+            textProps={{
+              style: { fontWeight: '600', color: 'white' },
+              children: null,
+            }}
+          />
+        </ThemedView>
+      )}
 
       <FInvestmentStat
         label="Renda Fixa"
