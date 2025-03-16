@@ -59,19 +59,6 @@ const ProtectedTabs = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name="investments"
-        options={{
-          title: 'Investments',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol
-              size={28}
-              name="chart.line.uptrend.xyaxis"
-              color={color}
-            />
-          ),
-        }}
-      />
     </Tabs>
   );
 };
@@ -97,7 +84,7 @@ export default function TabLayout() {
   return (
     <AccountProvider>
       <TransactionProvider>
-      <ProtectedTabs />
+        <ProtectedTabs />
       </TransactionProvider>
     </AccountProvider>
   );
