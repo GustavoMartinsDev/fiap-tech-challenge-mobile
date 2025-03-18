@@ -45,7 +45,7 @@ export default function FSelectInput({
   const getItemCount = (data: string[]) => data.length;
 
   return (
-    <View ref={buttonRef}>
+    <View ref={buttonRef} style={styles.container}>
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.8}
@@ -93,6 +93,11 @@ export default function FSelectInput({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: Colors.primary.main,
+  },
   backdrop: {
     padding: 0,
     justifyContent: 'center',
