@@ -2,8 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
-import { useTheme } from 'react-native-paper';
-import { black } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { Colors } from '@/constants/Colors';
 
 type PieChartData = {
@@ -28,7 +26,6 @@ export const PieChartComponent: React.FC<PieChartComponentProps> = ({
     },
   };
 
-  const theme = useTheme();
   return (
     <View style={styles.container}>
       <PieChart
@@ -48,9 +45,7 @@ export const PieChartComponent: React.FC<PieChartComponentProps> = ({
             <View
               style={[styles.legendColorBox, { backgroundColor: item.color }]}
             />
-            <Text style={[styles.legendText, { color: theme.colors.primary }]}>
-              {item.name}
-            </Text>
+            <Text style={styles.legendText}>{item.name}</Text>
           </View>
         ))}
       </View>
@@ -81,6 +76,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   legendText: {
+    color: Colors.primary.main,
     fontSize: 14,
   },
 });

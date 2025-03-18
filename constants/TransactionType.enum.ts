@@ -10,3 +10,16 @@ export enum TransactionType {
   DocTed = 'DOC/TED',
   Pix = 'PIX',
 }
+
+export const TransactionTypes = [
+  'Depósito',
+  'Saque',
+  'Transferência',
+  'Pagamento',
+  'Investimento',
+  'Empréstimo',
+  'Financiamento',
+  'Câmbio de moeda',
+  'DOC/TED',
+  'PIX',
+];
