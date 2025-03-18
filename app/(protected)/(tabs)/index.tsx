@@ -21,16 +21,16 @@ import { FInvestmentStat } from '@/components/atoms/FInvestmentStat/FInvestiment
 import { Colors } from '@/constants/Colors';
 import { useAccount } from '@/context/AccountContext';
 import { useTransactions } from '@/context/TransactionContext';
+import { FTransactionForm } from '@/components/molecules/FTransactionForm/FTransactionForm';
 import { TransactionType } from '@/constants/TransactionType.enum';
 import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import { formatBalanceToCurrency } from '@/firebase/utils/formatBalanceToCurrency';
 import { TransactionModel } from '@/firebase/types/transaction';
 import { InvestmentsCard } from '@/components/organisms/FInvestimentsCard';
+import { FTransactionFormCard } from '@/components/organisms/FTransactionFormCard/FTransactionFormCard';
 
 export default function HomeScreen() {
-  const [image, setImage] = useState<string>('');
   const [shownReceipts, setShownReceipts] = useState<string[]>([]);
-  const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
   const [options, setOptions] = useState<string[]>(
     Object.values(TransactionType)
@@ -54,10 +54,6 @@ export default function HomeScreen() {
     hasMoreTransactions,
     loadMoreTransactions,
   } = useTransactions();
-
-  const handleInputChange = (input: string) => {
-    settransactionValue(input);
-  };
 
   const toggleShownReceipts = (receiptUrl: string) => {
     setShownReceipts((prev) =>
@@ -84,24 +80,6 @@ export default function HomeScreen() {
 
   const handleHiddenAlert = () => {
     setAlert(undefined);
-  };
-
-  const onGetImage = (img: string) => {
-    setImage(img);
-  };
-
-  const handleNewTransaction = async () => {
-    if (!optionSelected || !transactionValue || !user || !account) {
-      return;
-    }
-
-    await addTransaction(Number(transactionValue), optionSelected, image);
-
-    handleShowAlert('Transação criada com sucesso');
-  };
-
-  const handleTransactionChange = (transactionOption: string) => {
-    setOptionSelected(transactionOption);
   };
 
   const handleTransactionSelectedInput = (input: string) => {
@@ -170,42 +148,9 @@ export default function HomeScreen() {
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
       />
-      <ThemedView style={styles.stepContainer}>
-        <MyChart />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <FSelectInput
-          data={options}
-          onChange={handleTransactionChange}
-          placeholder={optionSelected}
-        />
-        <FInput
-          options={{
-            value: transactionValue,
-            onChangeText: (input: string) => handleInputChange(input),
-          }}
-        />
-        <FInputImage onGetImage={onGetImage} />
-        {image && (
-          <View>
-            <Image source={{ uri: image }} style={styles.image} />
-          </View>
-        )}
+      <FTransactionFormCard />
 
-        <FButton
-          innerText="Create transaction"
-          options={{
-            loading: creatingTransaction,
-            mode: 'contained',
-            children: null,
-            onPress: () => handleNewTransaction(),
-          }}
-          textProps={{
-            style: { fontWeight: '600', color: 'white' },
-            children: null,
-          }}
-        />
-
+      <ThemedView style={styles.stepContainer}>
         <FButton
           innerText="Get transactions"
           options={{

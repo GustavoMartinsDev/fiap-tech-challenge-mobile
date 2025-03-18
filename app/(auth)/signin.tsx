@@ -73,36 +73,38 @@ export default function SignIn() {
 
       <Logo style={{ alignSelf: 'center', marginVertical: 16 }} />
 
-      <FInput
-        options={{
-          error: emailError,
-          placeholder: 'E-mail',
-          style: { borderWidth: 1, marginBottom: 16, padding: 8 },
-          value: email,
-          onChangeText: setEmail,
-        }}
-      />
+      <View style={{ gap: 16 }}>
+        <FInput
+          options={{
+            error: emailError,
+            placeholder: 'E-mail',
+            style: { borderWidth: 1, padding: 8 },
+            value: email,
+            onChangeText: setEmail,
+          }}
+        />
 
-      <FInput
-        options={{
-          error: passwordError,
-          placeholder: 'Senha',
-          secureTextEntry: true,
-          style: { borderWidth: 1, marginBottom: 16, padding: 8 },
-          value: password,
-          onChangeText: setPassword,
-        }}
-      />
+        <FInput
+          options={{
+            error: passwordError,
+            placeholder: 'Senha',
+            secureTextEntry: true,
+            style: { borderWidth: 1, padding: 8 },
+            value: password,
+            onChangeText: setPassword,
+          }}
+        />
 
-      <FButton
-        innerText="Entrar"
-        options={{
-          loading,
-          mode: 'contained',
-          onPress: handleSignin,
-          children: null,
-        }}
-      />
+        <FButton
+          innerText="Entrar"
+          options={{
+            loading,
+            mode: 'contained',
+            onPress: handleSignin,
+            children: null,
+          }}
+        />
+      </View>
       <Text style={{ marginTop: 16, fontFamily: 'Inter', alignSelf: 'center' }}>
         Não possui uma conta? {''}
         <Link href="/signup" style={{ color: theme.colors.secondary }}>
