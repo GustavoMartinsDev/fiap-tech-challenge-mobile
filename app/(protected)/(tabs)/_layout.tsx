@@ -1,13 +1,13 @@
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform, View, ActivityIndicator, Text } from 'react-native';
+import { ActivityIndicator, Platform, Text, View } from 'react-native';
 
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
-import { useAuth } from '@/context/AuthContext';
 import { AccountProvider, useAccount } from '@/context/AccountContext';
-import { router } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 import { TransactionProvider } from '@/context/TransactionContext';
+import { router } from 'expo-router';
 
 const ProtectedTabs = () => {
   const { loading } = useAccount();
@@ -44,18 +44,18 @@ const ProtectedTabs = () => {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Início',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={28} name="house" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="transactions"
         options={{
-          title: 'Explore',
+          title: 'Transações',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <IconSymbol size={28} name="wallet.bifold" color={color} />
           ),
         }}
       />
