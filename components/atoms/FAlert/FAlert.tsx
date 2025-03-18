@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Snackbar, SnackbarProps } from 'react-native-paper';
+import { Portal, Snackbar, SnackbarProps } from 'react-native-paper';
 
 export enum AlertMessageColor {
   Success = 'green',
@@ -25,16 +25,23 @@ const alertMessageColors = {
 export function FAlert(props: FAlertModel) {
   return (
     <View>
-      <Snackbar
-        visible={props.options?.visible!}
-        onDismiss={() => props.options?.onDismiss()}
-        {...props.options}
-        style={{
-          backgroundColor: alertMessageColors[props.type],
-        }}
-      >
-        {props.textAlert}
-      </Snackbar>
+      <Portal>
+        <Snackbar
+          visible={props.options?.visible!}
+          onDismiss={() => props.options?.onDismiss()}
+          {...props.options}
+          style={{
+            display: props.options?.visible ? 'flex' : 'none',
+            backgroundColor: alertMessageColors[props.type],
+            position: 'relative',
+            top: 0,
+            left: 0,
+            marginBottom: 30,
+          }}
+        >
+          {props.textAlert}
+        </Snackbar>
+      </Portal>
     </View>
   );
 }

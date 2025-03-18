@@ -22,7 +22,7 @@ export function FInputImage(props: FInputImageProps) {
 
   return (
     <FIconButton
-      options={{ icon: 'file-image', mode: 'contained', onPress: pickImage }}
+      options={{ icon: 'camera', mode: 'contained', onPress: pickImage }}
     />
   );
 }
