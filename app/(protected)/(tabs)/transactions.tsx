@@ -13,6 +13,7 @@ import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
 import { FInput } from '@/components/atoms/FInput/FInput';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 import FSelectInput from '@/components/atoms/FSelect/FSelect';
+import { FTransactionFormCard } from '@/components/organisms/FTransactionFormCard/FTransactionFormCard';
 import { TransactionType } from '@/constants/TransactionType.enum';
 import { useAccount } from '@/context/AccountContext';
 import { useAuth } from '@/context/AuthContext';
@@ -144,44 +145,8 @@ export default function TransactionsScreen() {
 
   return (
     <ParallaxScrollView>
-      <FAlert
-        textAlert={alert?.textAlert ?? ''}
-        type={alert?.type ?? AlertMessageColor.Info}
-        options={alert?.options}
-      />
       <ThemedView style={styles.stepContainer}>
-        <FSelectInput
-          data={options}
-          onChange={handleTransactionChange}
-          placeholder={optionSelected}
-        />
-        <FInput
-          options={{
-            value: transactionValue,
-            onChangeText: (input: string) => handleInputChange(input),
-          }}
-        />
-        <FInputImage onGetImage={onGetImage} />
-        {image && (
-          <View>
-            <Image source={{ uri: image }} style={styles.image} />
-          </View>
-        )}
-
-        <FButton
-          innerText="Create transaction"
-          options={{
-            loading: creatingTransaction,
-            mode: 'contained',
-            children: null,
-            onPress: () => handleNewTransaction(),
-          }}
-          textProps={{
-            style: { fontWeight: '600', color: 'white' },
-            children: null,
-          }}
-        />
-
+        <FTransactionFormCard />
         <FButton
           innerText="Get transactions"
           options={{
@@ -322,6 +287,11 @@ export default function TransactionsScreen() {
           />
         </ThemedView>
       )}
+      <FAlert
+        textAlert={alert?.textAlert ?? ''}
+        type={alert?.type ?? AlertMessageColor.Info}
+        options={alert?.options}
+      />
     </ParallaxScrollView>
   );
 }
