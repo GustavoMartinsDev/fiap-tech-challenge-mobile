@@ -26,6 +26,7 @@ import { TransactionType } from '@/constants/TransactionType.enum';
 import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
 import { formatBalanceToCurrency } from '@/firebase/utils/formatBalanceToCurrency';
 import { TransactionModel } from '@/firebase/types/transaction';
+import { InvestmentsCard } from '@/components/organisms/FInvestimentsCard';
 import { FTransactionFormCard } from '@/components/organisms/FTransactionFormCard/FTransactionFormCard';
 
 export default function HomeScreen() {
@@ -296,6 +297,7 @@ export default function HomeScreen() {
         value="R$ 36.000,00"
         backgroundColor={Colors.investmentCard.main}
       />
+      <InvestmentsCard />
     </ParallaxScrollView>
   );
 }
