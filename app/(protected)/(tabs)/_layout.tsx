@@ -64,7 +64,7 @@ const ProtectedTabs = () => {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="account" color={color} />
+            <IconSymbol size={28} name="person" color={color} />
           ),
         }}
       />
