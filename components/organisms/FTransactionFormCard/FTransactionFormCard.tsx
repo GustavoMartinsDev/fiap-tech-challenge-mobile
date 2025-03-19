@@ -23,7 +23,7 @@ export function FTransactionFormCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.bgCard.light,
-    padding: 40,
+    padding: 24,
     borderRadius: 8,
     gap: 16,
   },
