@@ -1,10 +1,4 @@
-import {
-  Image,
-  Modal,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -15,16 +9,17 @@ import {
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
 import { FButton } from '@/components/atoms/FButton/FButton';
-import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
+import { FInput } from '@/components/atoms/FInput/FInput';
+import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
+import FSelectInput from '@/components/atoms/FSelect/FSelect';
+import { FTransactionList } from '@/components/molecules/FTransactionList/FTransactionList';
 import { FTransactionFormCard } from '@/components/organisms/FTransactionFormCard/FTransactionFormCard';
-import { Colors } from '@/constants/Colors';
 import { TransactionType } from '@/constants/TransactionType.enum';
 import { useAccount } from '@/context/AccountContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTransactions } from '@/context/TransactionContext';
-import { formatBalanceToCurrency } from '@/firebase/utils/formatBalanceToCurrency';
-import { formatTimestampToDate } from '@/firebase/utils/formatTimestampToDate';
-import { useCallback, useState } from 'react';
+import { TransactionModel } from '@/firebase/types/transaction';
+import { useState } from 'react';
 
 export default function TransactionsScreen() {
   const [image, setImage] = useState<string>('');
@@ -35,6 +30,9 @@ export default function TransactionsScreen() {
     Object.values(TransactionType)
   );
   const [optionSelected, setOptionSelected] = useState<string>('');
+
+  const [transactionSelected, setTransactionSelected] =
+    useState<TransactionModel | null>(null);
 
   const { user } = useAuth();
   const { account } = useAccount();
@@ -49,8 +47,6 @@ export default function TransactionsScreen() {
     editTransaction,
     hasMoreTransactions,
     loadMoreTransactions,
-    setTransactionSelected,
-    transactionSelected,
   } = useTransactions();
 
   const handleInputChange = (input: string) => {
@@ -102,7 +98,48 @@ export default function TransactionsScreen() {
     setOptionSelected(transactionOption);
   };
 
-  const toggleExpanded = useCallback(() => setTransactionSelected(null), []);
+  const handleTransactionSelectedInput = (input: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        amount: Number(input),
+      };
+    });
+  };
+
+  const changeTransactionSelectedType = (transactionOption: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        type: transactionOption,
+      };
+    });
+  };
+
+  const onChangeTransactionImage = (img: string) => {
+    setTransactionSelected((prev) => {
+      if (!prev) return null;
+
+      return {
+        ...prev,
+        receiptUrl: img,
+      };
+    });
+  };
+
+  const handleEditTransaction = async () => {
+    if (!transactionSelected) {
+      return;
+    }
+
+    await editTransaction(transactionSelected);
+
+    await handleShowAlert('Transação editada com sucesso');
+  };
 
   return (
     <ParallaxScrollView>
@@ -131,7 +168,15 @@ export default function TransactionsScreen() {
             <ThemedText type="subtitle">
               Transações - Total: {transactions.length}
             </ThemedText>
-            {transactions && transactions.length > 0 ? (
+            <FTransactionList
+              transactionItems={transactions}
+              deleteTransaction={function (): void {throw new Error('Function not implemented.');}}
+              /* editTransaction={editTransaction} */
+              editTransaction={function (): void {throw new Error('Function not implemented.');}}
+              openFile={function (): void {throw new Error('Function not implemented.');}}
+            >
+            </FTransactionList>
+            {/* {transactions && transactions.length > 0 ? (
               transactions.map((transaction, index) => (
                 <View
                   key={index}
@@ -185,7 +230,7 @@ export default function TransactionsScreen() {
               ))
             ) : (
               <ThemedText>Nenhuma transação carregada.</ThemedText>
-            )}
+            )} */}
           </View>
         )}
 
@@ -209,23 +254,44 @@ export default function TransactionsScreen() {
       </ThemedView>
 
       {transactionSelected && (
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={transactionSelected?.id ? true : false}
-          onRequestClose={toggleExpanded}
-        >
-          <TouchableWithoutFeedback onPress={toggleExpanded}>
-            <View style={styles.backdrop}>
-              <View style={[styles.optionsBox]}>
-                <FTransactionFormCard
-                  edit={true}
-                  handleAlertMessage={handleShowAlert}
-                />
-              </View>
+        <ThemedView style={styles.stepContainer}>
+          <ThemedText type="subtitle">Editar transação:</ThemedText>
+          <FSelectInput
+            data={options}
+            placeholder={transactionSelected.type}
+            onChange={changeTransactionSelectedType}
+          />
+          <FInput
+            options={{
+              value: transactionSelected.amount.toString(),
+              onChangeText: (input: string) =>
+                handleTransactionSelectedInput(input),
+            }}
+          />
+          <FInputImage onGetImage={onChangeTransactionImage} />
+          {transactionSelected.receiptUrl && (
+            <View>
+              <Image
+                source={{ uri: transactionSelected.receiptUrl }}
+                style={styles.image}
+              />
             </View>
-          </TouchableWithoutFeedback>
-        </Modal>
+          )}
+
+          <FButton
+            innerText="Edit transaction"
+            options={{
+              loading: editingTransaction,
+              mode: 'contained',
+              children: null,
+              onPress: () => handleEditTransaction(),
+            }}
+            textProps={{
+              style: { fontWeight: '600', color: 'white' },
+              children: null,
+            }}
+          />
+        </ThemedView>
       )}
       <FAlert
         textAlert={alert?.textAlert ?? ''}
@@ -256,20 +322,5 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
-  },
-  backdrop: {
-    padding: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: Colors.modal.background,
-  },
-  optionsBox: {
-    backgroundColor: Colors.modal.main,
-    width: '90%',
-    padding: 10,
-    borderRadius: 6,
-    position: 'absolute',
-    left: 20,
   },
 });

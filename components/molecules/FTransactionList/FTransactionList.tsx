@@ -9,6 +9,7 @@ import { FTransactionItem } from "../FTransactionItem/FTransactionItem";
 export interface FTransactionListProps {
     transactionItems: TransactionModel[];
     deleteTransaction: () => void;
+    /* editTransaction: (transaction: TransactionModel) => void; */
     editTransaction: () => void;
     openFile: () => void;
   }
@@ -30,7 +31,8 @@ export function FTransactionList ({
                             type={transaction.type}
                             formattedDate={formatTimestampToDate(transaction.date)}
                             formattedValue={formatBalanceToCurrency(transaction.amount)}
-                            onEdit={editTransaction}
+                            /* onEdit={()=>editTransaction(transaction)} */
+                            onEdit={()=>editTransaction}
                             onDelete={deleteTransaction}
                             onFile={openFile}
                             fileURL={transaction.receiptUrl}>
