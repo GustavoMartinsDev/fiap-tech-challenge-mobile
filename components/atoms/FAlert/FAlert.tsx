@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { View } from 'react-native';
 import { Portal, Snackbar, SnackbarProps } from 'react-native-paper';
 
 export enum AlertMessageColor {
@@ -16,10 +16,10 @@ export interface FAlertModel {
 }
 
 const alertMessageColors = {
-  [AlertMessageColor.Success]: 'green',
-  [AlertMessageColor.Error]: 'red',
-  [AlertMessageColor.Warning]: 'yellow',
-  [AlertMessageColor.Info]: 'blue',
+  [AlertMessageColor.Success]: Colors.alerts.success,
+  [AlertMessageColor.Error]: Colors.alerts.error,
+  [AlertMessageColor.Warning]: Colors.alerts.warning,
+  [AlertMessageColor.Info]: Colors.alerts.info,
 };
 
 export function FAlert(props: FAlertModel) {

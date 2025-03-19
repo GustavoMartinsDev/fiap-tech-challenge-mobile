@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
   optionsBox: {
     backgroundColor: Colors.modal.main,
     width: '90%',
-    padding: 10,
     borderRadius: 6,
     position: 'absolute',
     left: 20,
