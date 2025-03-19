@@ -3,18 +3,18 @@ import {
   FAlert,
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
+import { FButton } from '@/components/atoms/FButton/FButton';
+import { FInput } from '@/components/atoms/FInput/FInput';
+import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 import FSelectInput from '@/components/atoms/FSelect/FSelect';
+import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
+import { TransactionTypes } from '@/constants/TransactionType.enum';
+import { useAccount } from '@/context/AccountContext';
+import { useAuth } from '@/context/AuthContext';
+import { useTransactions } from '@/context/TransactionContext';
 import { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
-import { TransactionTypes } from '@/constants/TransactionType.enum';
-import { FInput } from '@/components/atoms/FInput/FInput';
-import { FButton } from '@/components/atoms/FButton/FButton';
-import { useTransactions } from '@/context/TransactionContext';
-import { useAuth } from '@/context/AuthContext';
-import { useAccount } from '@/context/AccountContext';
-import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
 
 export interface FTransactionFormItemInput {
   type: string;
@@ -108,60 +108,42 @@ export function FTransactionForm({}: FTransactionFormProps) {
 
   return (
     <View style={styles.container}>
-      <FAlert
-        textAlert={alert?.textAlert ?? ''}
-        type={alert?.type!}
-        options={alert?.options}
-      />
-      <Text style={[styles.legendText, { color: Colors.primary.contrastText }]}>
-        Nova transação
-      </Text>
+      <ThemedText type="title">Nova transação</ThemedText>
+      <ThemedText type="default">Tipo</ThemedText>
       <FSelectInput
         placeholder={transactionType}
         data={TransactionTypes}
         onChange={handleTransactionTypeChange}
       />
-      <Text style={[styles.legendText, { color: Colors.primary.contrastText }]}>
-        Valor
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <View style={{ width: '80%' }}>
-          <FInput
-            options={{
-              value: transactionValue.toString(),
-              onChangeText: (item: string) => handleValueChange(item),
-              keyboardType: 'numeric',
-            }}
-          />
-        </View>
-        <View style={{ width: '10%' }}>
-          <FInputImage onGetImage={onGetImage} />
-        </View>
+      <ThemedText type="default">Valor</ThemedText>
+      <View style={styles.inputContainer}>
+        <FInput
+          options={{
+            value: transactionValue.toString(),
+            onChangeText: (item: string) => handleValueChange(item),
+            keyboardType: 'numeric',
+          }}
+        />
+        <FInputImage onGetImage={onGetImage} />
       </View>
       {image && (
-        <View>
+        <View style={styles.imageContainer}>
           <Image source={{ uri: image }} style={styles.image} />
         </View>
       )}
       <FButton
-        innerText="Concluir transação"
+        innerText="Concluir"
         options={{
           loading: creatingTransaction,
           mode: 'contained',
           children: null,
           onPress: () => handleNewTransaction(),
         }}
-        textProps={{
-          style: { fontWeight: '600', color: Colors.primary.contrastText },
-          children: null,
-        }}
+      />
+      <FAlert
+        textAlert={alert?.textAlert ?? ''}
+        type={alert?.type!}
+        options={alert?.options}
       />
     </View>
   );
@@ -169,14 +151,21 @@ export function FTransactionForm({}: FTransactionFormProps) {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
     gap: 16,
   },
-  legendText: {
-    fontWeight: '700',
-    fontSize: 25,
+  inputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary.light,
+    borderColor: Colors.primary.dark,
+    borderRadius: 4,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    padding: 8,
   },
   image: {
     width: 200,

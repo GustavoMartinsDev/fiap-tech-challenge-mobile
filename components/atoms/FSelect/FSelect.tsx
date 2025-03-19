@@ -1,16 +1,15 @@
+import { ThemedText } from '@/components/ThemedText';
+import { Colors } from '@/constants/Colors';
+import { AntDesign } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
   Modal,
+  StyleSheet,
+  TouchableOpacity,
   TouchableWithoutFeedback,
-  Platform,
+  View,
   VirtualizedList,
 } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AntDesign } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
 
 interface DropDownProps {
   data: string[];
@@ -51,7 +50,9 @@ export default function FSelectInput({
         activeOpacity={0.8}
         onPress={toggleExpanded}
       >
-        <Text style={styles.text}>{value || placeholder}</Text>
+        <ThemedText type="default" style={styles.text}>
+          {value || placeholder}
+        </ThemedText>
         <AntDesign name={expanded ? 'caretup' : 'caretdown'} />
       </TouchableOpacity>
       {expanded ? (
@@ -74,7 +75,7 @@ export default function FSelectInput({
                       style={styles.optionItem}
                       onPress={() => onSelect(item)}
                     >
-                      <Text>{item}</Text>
+                      <ThemedText type="default">{item}</ThemedText>
                     </TouchableOpacity>
                   )}
                   getItem={getItem}
@@ -95,7 +96,7 @@ export default function FSelectInput({
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 4,
     borderColor: Colors.primary.main,
   },
   backdrop: {
@@ -106,8 +107,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.modal.background,
   },
   optionItem: {
-    height: 40,
+    height: 60,
     justifyContent: 'center',
+    paddingHorizontal: 16,
   },
   separator: {
     height: 4,
@@ -116,23 +118,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.modal.main,
     width: '90%',
     padding: 10,
-    borderRadius: 6,
+    borderRadius: 4,
     maxHeight: 200,
     position: 'absolute',
     left: 20,
   },
   text: {
-    fontSize: 15,
-    opacity: 0.8,
+    opacity: 0.3,
   },
   button: {
-    height: 50,
+    height: 60,
     justifyContent: 'space-between',
-    backgroundColor: Colors.modal.main,
+    backgroundColor: Colors.primary.light,
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
     paddingHorizontal: 15,
-    borderRadius: 8,
+    borderRadius: 4,
   },
 });
