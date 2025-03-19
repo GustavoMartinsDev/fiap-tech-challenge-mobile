@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import React from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 
 type PieChartData = {
   name: string;
