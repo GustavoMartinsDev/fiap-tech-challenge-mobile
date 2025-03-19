@@ -13,28 +13,48 @@ import { TransactionTypes } from '@/constants/TransactionType.enum';
 import { useAccount } from '@/context/AccountContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTransactions } from '@/context/TransactionContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-export interface FTransactionFormItemInput {
-  type: string;
-  value: number;
-  fileBase64?: string;
-  fileName?: string;
+interface FTransactionFormProps {
+  edit: boolean;
+  handleAlertMessage?: (message: string) => void;
 }
 
-export interface FTransactionFormItem extends FTransactionFormItemInput {
-  id: string;
-}
-
-export interface FTransactionFormProps {}
-
-export function FTransactionForm({}: FTransactionFormProps) {
+export function FTransactionForm({
+  edit,
+  handleAlertMessage,
+}: FTransactionFormProps) {
   const [image, setImage] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
   const [transactionType, setTransactionType] = useState<string>('');
   const [transactionValue, setTransactionValue] = useState<string>('');
-  const { addTransaction, creating: creatingTransaction } = useTransactions();
+  const {
+    transactions,
+    fetchTransactions,
+    addTransaction,
+    creating: creatingTransaction,
+    loading: loadingTransactions,
+    editing: editingTransaction,
+    loadingMore: loadingMoreTransactions,
+    editTransaction,
+    hasMoreTransactions,
+    loadMoreTransactions,
+    setTransactionSelected,
+    transactionSelected,
+  } = useTransactions();
+
+  useEffect(() => {
+    if (!edit) {
+      return;
+    }
+
+    setTransactionType(transactionSelected?.type ?? '');
+    setTransactionValue(
+      transactionSelected?.amount?.toFixed(2).toString() ?? ''
+    );
+    setImage(transactionSelected?.receiptUrl ?? '');
+  }, [transactionSelected?.id]);
 
   const { user } = useAuth();
   const { account } = useAccount();
@@ -75,7 +95,12 @@ export function FTransactionForm({}: FTransactionFormProps) {
         children: null,
       },
     };
-    setAlert(alertPopUp);
+
+    if (edit) {
+      handleAlertMessage!(textAlert);
+    } else {
+      setAlert(alertPopUp);
+    }
   };
 
   const cleanTransactionForm = () => {
@@ -106,6 +131,25 @@ export function FTransactionForm({}: FTransactionFormProps) {
     cleanTransactionForm();
   };
 
+  const handleEditTransaction = async () => {
+    if (!transactionSelected) {
+      return;
+    }
+
+    let modelTransaction = transactionSelected;
+
+    modelTransaction.amount = Number(transactionValue);
+    modelTransaction.type = transactionType;
+    modelTransaction.receiptUrl = image;
+
+    await editTransaction(modelTransaction);
+
+    await handleShowAlert(
+      'Transação editada com sucesso',
+      AlertMessageColor.Success
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ThemedText type="title">Nova transação</ThemedText>
@@ -132,12 +176,13 @@ export function FTransactionForm({}: FTransactionFormProps) {
         </View>
       )}
       <FButton
-        innerText="Concluir"
+        innerText={edit ? 'Editar' : 'Concluir'}
         options={{
           loading: creatingTransaction,
           mode: 'contained',
           children: null,
-          onPress: () => handleNewTransaction(),
+          onPress: () =>
+            edit ? handleEditTransaction() : handleNewTransaction(),
         }}
       />
       <FAlert
