@@ -30,17 +30,9 @@ export function FTransactionForm({
   const [transactionType, setTransactionType] = useState<string>('');
   const [transactionValue, setTransactionValue] = useState<string>('');
   const {
-    transactions,
-    fetchTransactions,
     addTransaction,
     creating: creatingTransaction,
-    loading: loadingTransactions,
-    editing: editingTransaction,
-    loadingMore: loadingMoreTransactions,
     editTransaction,
-    hasMoreTransactions,
-    loadMoreTransactions,
-    setTransactionSelected,
     transactionSelected,
   } = useTransactions();
 
