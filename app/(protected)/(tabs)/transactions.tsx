@@ -72,8 +72,7 @@ export default function TransactionsScreen() {
         <View
           style={{
             backgroundColor: Colors.bgCard.contrastText,
-            paddingHorizontal: 16,
-            paddingVertical: 40,
+            padding: 24,
             borderRadius: 8,
             gap: 8,
           }}

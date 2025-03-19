@@ -38,7 +38,7 @@ export function FTransactionItem({
   };
 
   return (
-    <View>
+    <View style={{ gap: 8 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -47,16 +47,17 @@ export function FTransactionItem({
         }}
       >
         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <ThemedText>
-            {formattedDate} - {type}
+          <ThemedText type="caption" style={{ color: Colors.textLight.main }}>
+            {formattedDate}
           </ThemedText>
-          <ThemedText>{formattedValue}</ThemedText>
+          <ThemedText>{type}</ThemedText>
+          <ThemedText type="defaultSemiBold">{formattedValue}</ThemedText>
         </View>
-        <View style={{ flexDirection: 'row', padding: 0 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {fileURL && (
             <FIconButton
               options={{
-                icon: 'file',
+                icon: 'image',
                 mode: 'contained',
                 onPress: () => handleViewImage(fileURL),
               }}
@@ -76,7 +77,7 @@ export function FTransactionItem({
         style={{
           width: '100%',
           borderBottomWidth: 1,
-          borderColor: Colors.primary.main,
+          borderColor: Colors.primary.light,
         }}
       />
     </View>
