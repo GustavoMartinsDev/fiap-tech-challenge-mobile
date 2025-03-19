@@ -7,7 +7,7 @@ export interface FTransactionActionProps {
 
 export function FTransactionAction({ onEdit }: FTransactionActionProps) {
   return (
-    <View style={{ flexDirection: 'row', marginTop: -10 }}>
+    <View style={{ flexDirection: 'row'}}>
       <FIconButton
         options={{
           icon: 'pencil-circle',
