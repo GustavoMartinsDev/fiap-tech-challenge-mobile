@@ -32,6 +32,7 @@ export function FTransactionForm({
   const {
     addTransaction,
     creating: creatingTransaction,
+    editing: editingTransaction,
     editTransaction,
     transactionSelected,
   } = useTransactions();
@@ -128,7 +129,7 @@ export function FTransactionForm({
       return;
     }
 
-    let modelTransaction = transactionSelected;
+    let modelTransaction = JSON.parse(JSON.stringify(transactionSelected));
 
     modelTransaction.amount = Number(transactionValue);
     modelTransaction.type = transactionType;
@@ -172,7 +173,7 @@ export function FTransactionForm({
       <FButton
         innerText={edit ? 'Editar' : 'Concluir'}
         options={{
-          loading: creatingTransaction,
+          loading: creatingTransaction || editingTransaction,
           mode: 'contained',
           children: null,
           onPress: () =>

@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
 import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
 import { Colors } from '@/constants/Colors';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Divider } from 'react-native-paper';
 import {
@@ -30,6 +30,10 @@ export function FTransactionItem({
   fileURL,
 }: FTransactionItemProps) {
   const [image, setImage] = useState<string>('');
+
+  useEffect(() => {
+    setImage('');
+  }, [fileURL]);
 
   const handleViewImage = (imageData: string) => {
     let img = !image ? imageData : '';
