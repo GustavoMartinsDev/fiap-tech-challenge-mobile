@@ -7,7 +7,6 @@ import {
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import {
   AlertMessageColor,
   FAlert,
@@ -17,29 +16,16 @@ import { FButton } from '@/components/atoms/FButton/FButton';
 import { FTransactionList } from '@/components/molecules/FTransactionList/FTransactionList';
 import { FTransactionFormCard } from '@/components/organisms/FTransactionFormCard/FTransactionFormCard';
 import { Colors } from '@/constants/Colors';
-import { TransactionType } from '@/constants/TransactionType.enum';
-import { useAccount } from '@/context/AccountContext';
-import { useAuth } from '@/context/AuthContext';
 import { useTransactions } from '@/context/TransactionContext';
 import { TransactionModel } from '@/firebase/types/transaction';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function TransactionsScreen() {
-  const [image, setImage] = useState<string>('');
-  const [shownReceipts, setShownReceipts] = useState<string[]>([]);
-  const [transactionValue, settransactionValue] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
-  const [options, setOptions] = useState<string[]>(
-    Object.values(TransactionType)
-  );
-  const [optionSelected, setOptionSelected] = useState<string>('');
 
-  const { user } = useAuth();
-  const { account } = useAccount();
   const {
     transactions,
     fetchTransactions,
-    addTransaction,
     loading: loadingTransactions,
     loadingMore: loadingMoreTransactions,
     hasMoreTransactions,
@@ -51,18 +37,6 @@ export default function TransactionsScreen() {
   useEffect(() => {
     fetchTransactions();
   }, []);
-
-  const handleInputChange = (input: string) => {
-    settransactionValue(input);
-  };
-
-  const toggleShownReceipts = (receiptUrl: string) => {
-    setShownReceipts((prev) =>
-      prev.includes(receiptUrl)
-        ? prev.filter((url) => url !== receiptUrl)
-        : [...prev, receiptUrl]
-    );
-  };
 
   const handleShowAlert = (textAlert: string) => {
     const alertPopUp: FAlertModel = {
@@ -83,20 +57,6 @@ export default function TransactionsScreen() {
     setAlert(undefined);
   };
 
-  const onGetImage = (img: string) => {
-    setImage(img);
-  };
-
-  const handleNewTransaction = async () => {
-    if (!optionSelected || !transactionValue || !user || !account) {
-      return;
-    }
-
-    await addTransaction(Number(transactionValue), optionSelected, image);
-
-    handleShowAlert('Transação criada com sucesso');
-  };
-
   const handleEditTransaction = (item: TransactionModel) => {
     setTransactionSelected(item);
   };
@@ -105,59 +65,42 @@ export default function TransactionsScreen() {
 
   return (
     <ParallaxScrollView>
-      <ThemedView style={styles.stepContainer}>
-        <FTransactionFormCard edit={false} />
-        <FButton
-          innerText="Carregar transações"
-          options={{
-            mode: 'contained',
-            children: null,
-            loading: loadingTransactions,
-            onPress: async () => {
-              await fetchTransactions();
-            },
+      <FTransactionFormCard edit={false} />
+      {loadingTransactions ? (
+        <ThemedText>Carregando transações...</ThemedText>
+      ) : (
+        <View
+          style={{
+            backgroundColor: Colors.bgCard.contrastText,
+            paddingHorizontal: 16,
+            paddingVertical: 40,
+            borderRadius: 8,
+            gap: 8,
           }}
-          textProps={{
-            style: { fontWeight: '600', color: 'white' },
-            children: null,
-          }}
-        />
-
-        {loadingTransactions ? (
-          <ThemedText>Carregando transações...</ThemedText>
-        ) : (
-          <View>
-            <ThemedText type="subtitle">
-              Transações - Total: {transactions.length}
-            </ThemedText>
-            <FTransactionList
-              transactionItems={transactions}
-              editTransaction={handleEditTransaction}
-              openFile={function (): void {
-                throw new Error('Function not implemented.');
-              }}
-            />
-          </View>
-        )}
-
-        {hasMoreTransactions && (
-          <FButton
-            innerText="Load more transactions"
-            options={{
-              mode: 'contained',
-              children: null,
-              loading: loadingMoreTransactions,
-              onPress: async () => {
-                await loadMoreTransactions();
-              },
-            }}
-            textProps={{
-              style: { fontWeight: '600', color: 'white' },
-              children: null,
+        >
+          <ThemedText type="title">Transações</ThemedText>
+          <FTransactionList
+            transactionItems={transactions}
+            editTransaction={handleEditTransaction}
+            openFile={function (): void {
+              throw new Error('Function not implemented.');
             }}
           />
-        )}
-      </ThemedView>
+          {hasMoreTransactions && (
+            <FButton
+              innerText="Carregar mais..."
+              options={{
+                mode: 'text',
+                children: null,
+                loading: loadingMoreTransactions,
+                onPress: async () => {
+                  await loadMoreTransactions();
+                },
+              }}
+            />
+          )}
+        </View>
+      )}
 
       {transactionSelected && (
         <Modal
@@ -194,7 +137,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   stepContainer: {
-    gap: 8,
+    gap: 16,
     marginBottom: 8,
   },
   reactLogo: {
