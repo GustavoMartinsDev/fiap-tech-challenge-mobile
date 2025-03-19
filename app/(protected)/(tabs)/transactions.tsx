@@ -22,7 +22,7 @@ import { useAccount } from '@/context/AccountContext';
 import { useAuth } from '@/context/AuthContext';
 import { useTransactions } from '@/context/TransactionContext';
 import { TransactionModel } from '@/firebase/types/transaction';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function TransactionsScreen() {
   const [image, setImage] = useState<string>('');
@@ -40,16 +40,17 @@ export default function TransactionsScreen() {
     transactions,
     fetchTransactions,
     addTransaction,
-    creating: creatingTransaction,
     loading: loadingTransactions,
-    editing: editingTransaction,
     loadingMore: loadingMoreTransactions,
-    editTransaction,
     hasMoreTransactions,
     loadMoreTransactions,
     setTransactionSelected,
     transactionSelected,
   } = useTransactions();
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const handleInputChange = (input: string) => {
     settransactionValue(input);
@@ -107,7 +108,7 @@ export default function TransactionsScreen() {
       <ThemedView style={styles.stepContainer}>
         <FTransactionFormCard edit={false} />
         <FButton
-          innerText="Get transactions"
+          innerText="Carregar transações"
           options={{
             mode: 'contained',
             children: null,

@@ -51,16 +51,18 @@ export function FTransactionItem({
           </ThemedText>
           <ThemedText>{formattedValue}</ThemedText>
         </View>
-        {fileURL && (
-          <FIconButton
-            options={{
-              icon: 'file',
-              mode: 'contained',
-              onPress: () => handleViewImage(fileURL),
-            }}
-          />
-        )}
-        <FTransactionAction onEdit={onEdit} />
+        <View style={{ flexDirection: 'row', padding: 0 }}>
+          {fileURL && (
+            <FIconButton
+              options={{
+                icon: 'file',
+                mode: 'contained',
+                onPress: () => handleViewImage(fileURL),
+              }}
+            />
+          )}
+          <FTransactionAction onEdit={onEdit} />
+        </View>
       </View>
       <View>
         {image && (
