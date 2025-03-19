@@ -152,7 +152,9 @@ export function FTransactionForm({
 
   return (
     <View style={styles.container}>
-      <ThemedText type="title">Nova transação</ThemedText>
+      <ThemedText type="title">
+        {edit ? 'Editar transação' : 'Nova transação'}
+      </ThemedText>
       <ThemedText type="default">Tipo</ThemedText>
       <FSelectInput
         placeholder={transactionType}

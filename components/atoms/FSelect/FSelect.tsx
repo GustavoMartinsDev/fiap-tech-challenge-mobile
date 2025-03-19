@@ -50,9 +50,7 @@ export default function FSelectInput({
         activeOpacity={0.8}
         onPress={toggleExpanded}
       >
-        <ThemedText type="default" style={styles.text}>
-          {value || placeholder}
-        </ThemedText>
+        <ThemedText type="default">{value || placeholder}</ThemedText>
         <AntDesign name={expanded ? 'caretup' : 'caretdown'} />
       </TouchableOpacity>
       {expanded ? (
@@ -122,9 +120,6 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     position: 'absolute',
     left: 20,
-  },
-  text: {
-    opacity: 0.3,
   },
   button: {
     height: 60,
