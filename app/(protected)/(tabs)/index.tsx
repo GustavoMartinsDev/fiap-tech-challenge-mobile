@@ -1,9 +1,7 @@
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
 import FInvestmentsCard from '@/components/organisms/FInvestmentsCard/FInvestmentsCard';
 import FSummaryCard from '@/components/organisms/FSummaryCard/FSummaryCard';
 
-import { FButton } from '@/components/atoms/FButton/FButton';
 import { useAuth } from '@/context/AuthContext';
 
 import { useAccount } from '@/context/AccountContext';
@@ -49,22 +47,6 @@ export default function HomeScreen() {
       <Animated.View style={fadeInInvestmentsStyle}>
         <FInvestmentsCard />
       </Animated.View>
-
-      <ThemedText type="caption">E-mail: {user?.email}</ThemedText>
-      <ThemedText type="caption">ID da conta: {account?.id}</ThemedText>
-
-      <FButton
-        innerText="Logout"
-        options={{
-          mode: 'contained',
-          children: null,
-          onPress: () => logout(),
-        }}
-        textProps={{
-          style: { fontWeight: '600', color: 'white' },
-          children: null,
-        }}
-      />
     </ParallaxScrollView>
   );
 }

@@ -59,6 +59,15 @@ const ProtectedTabs = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="account" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 };

@@ -9,6 +9,7 @@ const MAPPING = {
   // See MaterialIcons here: https://icons.expo.fyi
   house: 'home',
   'wallet.bifold': 'account-balance-wallet',
+  account: 'account-circle',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
