@@ -33,7 +33,7 @@ export default function FInvestmentsCard() {
   return (
     <ThemedView style={styles.cardLight}>
       <ThemedText type="title">Investimentos</ThemedText>
-      <ThemedText type="subtitle">Total: R$ 50.000,00</ThemedText>
+      <ThemedText type="default">Total: R$ 50.000,00</ThemedText>
       <FInvestmentStats />
       <PieChartComponent data={data} />
     </ThemedView>

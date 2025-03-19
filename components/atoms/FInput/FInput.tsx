@@ -1,7 +1,6 @@
 import { Colors } from '@/constants/Colors';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
 
 type FInputProps = {
   options?: TextInputProps;
@@ -22,13 +21,12 @@ export function FInput(props: FInputProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    backgroundColor: Colors.primary.contrastText,
-    borderRadius: 8,
+    flex: 1,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 4,
     borderColor: Colors.primary.main,
+    backgroundColor: Colors.primary.light,
   },
 });

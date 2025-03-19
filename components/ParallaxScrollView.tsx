@@ -9,6 +9,7 @@ import Animated, {
 
 import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
+import { useTheme } from 'react-native-paper';
 
 const HEADER_HEIGHT = 30;
 
@@ -22,6 +23,7 @@ export default function ParallaxScrollView({
   headerImage,
   headerBackgroundColor,
 }: Props) {
+  const theme = useTheme();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
@@ -47,7 +49,9 @@ export default function ParallaxScrollView({
   });
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView
+      style={{ ...styles.container, backgroundColor: theme.colors.background }}
+    >
       <Animated.ScrollView
         ref={scrollRef}
         scrollEventThrottle={16}

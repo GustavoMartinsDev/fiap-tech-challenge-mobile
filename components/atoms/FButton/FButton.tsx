@@ -1,4 +1,3 @@
-import { FontAwesome } from '@expo/vector-icons';
 import { TextStyle, View } from 'react-native';
 import { Button, ButtonProps, Text, TextProps } from 'react-native-paper';
 
@@ -12,7 +11,9 @@ export function FButton(props: FButtonProps) {
   return (
     <View>
       <Button {...props.options}>
-        <Text {...props.textProps}>{props.innerText}</Text>
+        <Text {...props.textProps} style={{ fontWeight: 600 }}>
+          {props.innerText}
+        </Text>
       </Button>
     </View>
   );

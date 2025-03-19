@@ -3,38 +3,58 @@ import {
   FAlert,
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
-import FSelectInput from '@/components/atoms/FSelect/FSelect';
-import { Colors } from '@/constants/Colors';
-import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { Text } from 'react-native-paper';
-import { TransactionTypes } from '@/constants/TransactionType.enum';
-import { FInput } from '@/components/atoms/FInput/FInput';
 import { FButton } from '@/components/atoms/FButton/FButton';
-import { useTransactions } from '@/context/TransactionContext';
-import { useAuth } from '@/context/AuthContext';
-import { useAccount } from '@/context/AccountContext';
+import { FInput } from '@/components/atoms/FInput/FInput';
 import { FInputImage } from '@/components/atoms/FInputImage/FInputImage';
+import FSelectInput from '@/components/atoms/FSelect/FSelect';
+import { ThemedText } from '@/components/ThemedText';
+import { Colors } from '@/constants/Colors';
+import { TransactionTypes } from '@/constants/TransactionType.enum';
+import { useAccount } from '@/context/AccountContext';
+import { useAuth } from '@/context/AuthContext';
+import { useTransactions } from '@/context/TransactionContext';
+import { useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
-export interface FTransactionFormItemInput {
-  type: string;
-  value: number;
-  fileBase64?: string;
-  fileName?: string;
+interface FTransactionFormProps {
+  edit: boolean;
+  handleAlertMessage?: (message: string) => void;
 }
 
-export interface FTransactionFormItem extends FTransactionFormItemInput {
-  id: string;
-}
-
-export interface FTransactionFormProps {}
-
-export function FTransactionForm({}: FTransactionFormProps) {
+export function FTransactionForm({
+  edit,
+  handleAlertMessage,
+}: FTransactionFormProps) {
   const [image, setImage] = useState<string>('');
   const [alert, setAlert] = useState<FAlertModel>();
   const [transactionType, setTransactionType] = useState<string>('');
   const [transactionValue, setTransactionValue] = useState<string>('');
-  const { addTransaction, creating: creatingTransaction } = useTransactions();
+  const {
+    transactions,
+    fetchTransactions,
+    addTransaction,
+    creating: creatingTransaction,
+    loading: loadingTransactions,
+    editing: editingTransaction,
+    loadingMore: loadingMoreTransactions,
+    editTransaction,
+    hasMoreTransactions,
+    loadMoreTransactions,
+    setTransactionSelected,
+    transactionSelected,
+  } = useTransactions();
+
+  useEffect(() => {
+    if (!edit) {
+      return;
+    }
+
+    setTransactionType(transactionSelected?.type ?? '');
+    setTransactionValue(
+      transactionSelected?.amount?.toFixed(2).toString() ?? ''
+    );
+    setImage(transactionSelected?.receiptUrl ?? '');
+  }, [transactionSelected?.id]);
 
   const { user } = useAuth();
   const { account } = useAccount();
@@ -75,7 +95,12 @@ export function FTransactionForm({}: FTransactionFormProps) {
         children: null,
       },
     };
-    setAlert(alertPopUp);
+
+    if (edit) {
+      handleAlertMessage!(textAlert);
+    } else {
+      setAlert(alertPopUp);
+    }
   };
 
   const cleanTransactionForm = () => {
@@ -106,62 +131,64 @@ export function FTransactionForm({}: FTransactionFormProps) {
     cleanTransactionForm();
   };
 
+  const handleEditTransaction = async () => {
+    if (!transactionSelected) {
+      return;
+    }
+
+    let modelTransaction = transactionSelected;
+
+    modelTransaction.amount = Number(transactionValue);
+    modelTransaction.type = transactionType;
+    modelTransaction.receiptUrl = image;
+
+    await editTransaction(modelTransaction);
+
+    await handleShowAlert(
+      'Transação editada com sucesso',
+      AlertMessageColor.Success
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <FAlert
-        textAlert={alert?.textAlert ?? ''}
-        type={alert?.type!}
-        options={alert?.options}
-      />
-      <Text style={[styles.legendText, { color: Colors.primary.contrastText }]}>
-        Nova transação
-      </Text>
+      <ThemedText type="title">Nova transação</ThemedText>
+      <ThemedText type="default">Tipo</ThemedText>
       <FSelectInput
         placeholder={transactionType}
         data={TransactionTypes}
         onChange={handleTransactionTypeChange}
       />
-      <Text style={[styles.legendText, { color: Colors.primary.contrastText }]}>
-        Valor
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <View style={{ width: '80%' }}>
-          <FInput
-            options={{
-              value: transactionValue.toString(),
-              onChangeText: (item: string) => handleValueChange(item),
-              keyboardType: 'numeric',
-            }}
-          />
-        </View>
-        <View style={{ width: '10%' }}>
-          <FInputImage onGetImage={onGetImage} />
-        </View>
+      <ThemedText type="default">Valor</ThemedText>
+      <View style={styles.inputContainer}>
+        <FInput
+          options={{
+            value: transactionValue.toString(),
+            onChangeText: (item: string) => handleValueChange(item),
+            keyboardType: 'numeric',
+          }}
+        />
+        <FInputImage onGetImage={onGetImage} />
       </View>
       {image && (
-        <View>
+        <View style={styles.imageContainer}>
           <Image source={{ uri: image }} style={styles.image} />
         </View>
       )}
       <FButton
-        innerText="Concluir transação"
+        innerText={edit ? 'Editar' : 'Concluir'}
         options={{
           loading: creatingTransaction,
           mode: 'contained',
           children: null,
-          onPress: () => handleNewTransaction(),
+          onPress: () =>
+            edit ? handleEditTransaction() : handleNewTransaction(),
         }}
-        textProps={{
-          style: { fontWeight: '600', color: Colors.primary.contrastText },
-          children: null,
-        }}
+      />
+      <FAlert
+        textAlert={alert?.textAlert ?? ''}
+        type={alert?.type!}
+        options={alert?.options}
       />
     </View>
   );
@@ -169,14 +196,21 @@ export function FTransactionForm({}: FTransactionFormProps) {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
     gap: 16,
   },
-  legendText: {
-    fontWeight: '700',
-    fontSize: 25,
+  inputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary.light,
+    borderColor: Colors.primary.dark,
+    borderRadius: 4,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    padding: 8,
   },
   image: {
     width: 200,
