@@ -38,4 +38,10 @@ export const Colors = {
   investmentCard: {
     main: '#3f51b5',
   },
+  alerts: {
+    error: '#e57373',
+    warning: '#ffb74d',
+    info: '#64b5f6',
+    success: '#81c784',
+  },
 };
