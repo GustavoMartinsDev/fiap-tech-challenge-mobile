@@ -1,16 +1,16 @@
-import { View, Text } from 'react-native';
-import { FButton } from '@/components/atoms/FButton/FButton';
-import { FInput } from '@/components/atoms/FInput/FInput';
-import { Link } from 'expo-router';
-import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import Logo from '@/assets/images/logo.svg';
-import { useTheme } from 'react-native-paper';
 import {
-  FAlert,
   AlertMessageColor,
+  FAlert,
   FAlertModel,
 } from '@/components/atoms/FAlert/FAlert';
+import { FButton } from '@/components/atoms/FButton/FButton';
+import { FInput } from '@/components/atoms/FInput/FInput';
+import { useAuth } from '@/context/AuthContext';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
 export default function SignIn() {
   const { signIn } = useAuth();
@@ -57,23 +57,16 @@ export default function SignIn() {
 
   return (
     <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        padding: 16,
-        gap: 12,
-        backgroundColor: theme.colors.background,
-      }}
+      style={{ ...styles.container, backgroundColor: theme.colors.background }}
     >
       <FAlert
         textAlert={alert?.textAlert ?? ''}
         type={alert?.type ?? AlertMessageColor.Info}
         options={alert?.options}
       />
-
       <Logo style={{ alignSelf: 'center', marginVertical: 16 }} />
 
-      <View style={{ gap: 16 }}>
+      <View style={{ gap: 16, height: 200 }}>
         <FInput
           options={{
             error: emailError,
@@ -83,7 +76,6 @@ export default function SignIn() {
             onChangeText: setEmail,
           }}
         />
-
         <FInput
           options={{
             error: passwordError,
@@ -114,3 +106,12 @@ export default function SignIn() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+    gap: 12,
+  },
+});
