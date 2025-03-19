@@ -15,7 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export default function HomeScreen() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { account } = useAccount();
 
   const fadeInSummary = useSharedValue(0);
