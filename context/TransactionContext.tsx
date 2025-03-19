@@ -1,6 +1,3 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { TransactionModel } from '@/firebase/types/transaction';
-import { useAuth } from './AuthContext';
 import {
   createTransaction,
   editTransactionData,
@@ -9,8 +6,11 @@ import {
   updateTransactionReceiptUrl,
   uploadTransactionReceipt,
 } from '@/firebase/controllers/transaction';
-import { useAccount } from './AccountContext';
+import { TransactionModel } from '@/firebase/types/transaction';
 import { DocumentSnapshot } from 'firebase/firestore';
+import React, { createContext, useContext, useState } from 'react';
+import { useAccount } from './AccountContext';
+import { useAuth } from './AuthContext';
 
 interface TransactionContextType {
   transactions: TransactionModel[];
@@ -19,6 +19,7 @@ interface TransactionContextType {
   editing: boolean;
   loadingMore: boolean;
   hasMoreTransactions: boolean;
+  transactionSelected: TransactionModel | null;
   fetchTransactions: () => Promise<void>;
   loadMoreTransactions: () => Promise<void>;
   editTransaction: (transaction: TransactionModel) => Promise<void>;
@@ -27,6 +28,7 @@ interface TransactionContextType {
     type: string,
     receipt?: string
   ) => Promise<void>;
+  setTransactionSelected: (transaction: TransactionModel | null) => void;
 }
 
 const TransactionContext = createContext<TransactionContextType | undefined>(
@@ -39,6 +41,8 @@ export const TransactionProvider = ({
   children: React.ReactNode;
 }) => {
   const [transactions, setTransactions] = useState<TransactionModel[]>([]);
+  const [transactionSelected, setTransactionSelected] =
+    useState<TransactionModel | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [creating, setCreating] = useState<boolean>(false);
   const [editing, setEditing] = useState<boolean>(false);
@@ -164,6 +168,8 @@ export const TransactionProvider = ({
       oldType: oldTransaction.type,
     });
 
+    setTransactionSelected(null);
+
     setEditing(false);
   };
 
@@ -175,10 +181,12 @@ export const TransactionProvider = ({
         creating,
         editing,
         hasMoreTransactions,
+        transactionSelected,
         editTransaction,
         fetchTransactions,
         loadMoreTransactions,
         addTransaction,
+        setTransactionSelected,
         loadingMore,
       }}
     >

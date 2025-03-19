@@ -4,10 +4,18 @@ import { Colors } from '@/constants/Colors';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-export function FTransactionFormCard() {
+interface FTransactionFormCardProps {
+  edit: boolean;
+  handleAlertMessage?: (message: string) => void;
+}
+
+export function FTransactionFormCard({
+  edit,
+  handleAlertMessage,
+}: FTransactionFormCardProps) {
   return (
     <ThemedView style={styles.container}>
-      <FTransactionForm />
+      <FTransactionForm edit={edit} handleAlertMessage={handleAlertMessage} />
     </ThemedView>
   );
 }
