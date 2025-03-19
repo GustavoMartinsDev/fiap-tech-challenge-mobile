@@ -38,7 +38,13 @@ export function FTransactionItem({
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
+      >
         <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
           <ThemedText>
             {formattedDate} - {type}
