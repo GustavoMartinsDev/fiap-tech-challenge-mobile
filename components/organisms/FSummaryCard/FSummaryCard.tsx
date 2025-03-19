@@ -17,7 +17,7 @@ export default function FSummaryCard({ user, account }: FSummaryCardProps) {
   return (
     <ThemedView style={styles.cardDark}>
       <ThemedText type="title" isDark>
-        Olá, {user?.displayName}!
+        Olá {user?.displayName}!
       </ThemedText>
       <ThemedText type="caption" isDark style={{ textTransform: 'capitalize' }}>
         {formatDateNow()}

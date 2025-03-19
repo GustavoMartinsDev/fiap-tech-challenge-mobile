@@ -47,12 +47,11 @@ Para executar o Expo rode:
 
 - [Expo](https://expo.dev/): Plataforma para desenvolvimento prático de apllicações em React Native.
 - [React Native Paper](https://callstack.github.io/react-native-paper/): Material UI lib para componentes e ícones React Native.
-- [Victory Native](https://commerce.nearform.com/open-source/victory-native/): Material UI lib para gráficos React Native.
+- [React Native Chart Kit](https://github.com/indiespirit/react-native-chart-kit): Material UI lib para gráficos React Native.
+- [Firebase](https://firebase.google.com): Plataforma cloud para desenvolvimento de aplicações, com base de dados, autenticação e outras funcionalidades podendo ser aplicadas.
 
 ## Conceitos aplicados
 
--
-
-## Outras ferramentas úteis
-
--
+- Context API para gerenciamento de estado compartilhado;
+- Paginação para carregar grandes volumes de dados;
+- Atomic design para criação de componentes reutilizáveis.
