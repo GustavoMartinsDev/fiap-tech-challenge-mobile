@@ -1,4 +1,4 @@
-import { FIconButton } from "@/components/atoms/FIconButton/FIconButton"
+import { FIconButton } from "@/components/atoms/FIconButton/FIconButton";
 import { View } from "react-native";
 
 export interface FTransactionActionProps {

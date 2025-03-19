@@ -1,21 +1,23 @@
-import { View } from "react-native";
-import { List } from "react-native-paper";
-import { FTransactionItem } from "../FTransactionItem/FTransactionItem";
 import { ThemedText } from "@/components/ThemedText";
 import { TransactionModel } from "@/firebase/types/transaction";
 import { formatBalanceToCurrency } from "@/firebase/utils/formatBalanceToCurrency";
 import { formatTimestampToDate } from "@/firebase/utils/formatTimestampToDate";
+import { View } from "react-native";
+import { List } from "react-native-paper";
+import { FTransactionItem } from "../FTransactionItem/FTransactionItem";
 
 export interface FTransactionListProps {
     transactionItems: TransactionModel[];
     deleteTransaction: () => void;
     editTransaction: () => void;
+    openFile: () => void;
   }
 
 export function FTransactionList ({
     transactionItems,
     editTransaction,
-    deleteTransaction
+    deleteTransaction,
+    openFile
 }: FTransactionListProps) {
     return (
         transactionItems.length > 0 ? (
@@ -23,13 +25,15 @@ export function FTransactionList ({
                 <View
                     key={index}
                     >
-                    <List.Section>                     
+                    <List.Section style={{flexDirection:"row", justifyContent:"center", alignItems:"baseline"}}>                     
                         <FTransactionItem
                             type={transaction.type}
                             formattedDate={formatTimestampToDate(transaction.date)}
                             formattedValue={formatBalanceToCurrency(transaction.amount)}
                             onEdit={editTransaction}
-                            onDelete={deleteTransaction}>
+                            onDelete={deleteTransaction}
+                            onFile={openFile}
+                            fileURL={transaction.receiptUrl}>
                         </FTransactionItem>
                     </List.Section>
                 </View>
