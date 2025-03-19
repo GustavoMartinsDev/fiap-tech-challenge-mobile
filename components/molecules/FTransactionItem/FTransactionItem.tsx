@@ -3,6 +3,7 @@ import { FIconButton } from '@/components/atoms/FIconButton/FIconButton';
 import { Colors } from '@/constants/Colors';
 import { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
+import { Divider } from 'react-native-paper';
 import {
   FTransactionAction,
   FTransactionActionProps,
@@ -71,6 +72,13 @@ export function FTransactionItem({
           </View>
         )}
       </View>
+      <Divider
+        style={{
+          width: '100%',
+          borderBottomWidth: 1,
+          borderColor: Colors.primary.main,
+        }}
+      />
     </View>
   );
 }
